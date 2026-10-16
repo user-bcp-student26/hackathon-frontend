@@ -4,3 +4,5 @@ export interface Wallet {
   payments_enabled: boolean;
   createdAt: string;
 }
+
+export const WALLET_ID_PATTERN = /^wallet_[0-9a-f]{16}$/;

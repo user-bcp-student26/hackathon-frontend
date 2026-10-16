@@ -7,6 +7,7 @@ import { finalize } from 'rxjs';
 import { apiErrorMessage } from '../../core/api/api-error';
 import { Contact, ContactRequest } from './models/contact.model';
 import { ContactsService } from './contacts.service';
+import { WALLET_ID_PATTERN } from '../wallet/models/wallet.model';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,7 +32,7 @@ export class ContactsPage {
   readonly form = this.formBuilder.group({
     name: ['', [Validators.required, Validators.maxLength(120)]],
     phone: ['', [Validators.required, Validators.pattern(/^\+?[0-9]{9,15}$/)]],
-    wallet_id: ['', [Validators.required, Validators.pattern(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)]],
+    wallet_id: ['', [Validators.required, Validators.pattern(WALLET_ID_PATTERN)]],
   });
 
   loadContacts(): void {

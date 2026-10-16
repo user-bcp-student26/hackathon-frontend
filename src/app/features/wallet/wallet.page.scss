@@ -47,6 +47,12 @@
   color: var(--color-muted);
 }
 
+.wallet-empty__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
 .wallet-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(var(--width-wallet-column-min), 0.95fr);

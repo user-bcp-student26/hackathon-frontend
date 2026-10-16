@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Estado | Implementado parcialmente — creación/ingreso listos; CA-02/03/05/06 pendientes de backend; Tester pendiente |
+| Estado | Registro/ingreso y activación wallet implementados; prueba real del backend y Tester pendientes; contactos/KYC pendientes |
 | Versión | v1 (anterior: Ninguna) |
 | Fecha de creación | 2026-10-16 |
 | Aprobado por / fecha | Usuario, confirmación en chat / 2026-10-16 |
@@ -41,7 +41,7 @@
 | CA | Decisión del ADR | Endpoint (contrato) | Componente / servicio | Prueba |
 |---|---|---|---|---|
 | CA-01 | Validación cliente/servidor; bcrypt solo en backend | `POST /users` (201, 400, 409) | Registro, formulario tipado y `UserService` | Formatos, obligatorios, 201 y errores del contrato; agente Tester |
-| CA-02 | Una wallet por usuario, UUID v4, `active`; crear sin KYC | No disponible en el backend actual | `WalletPage` informativa; sin servicio HTTP | Verificar que no haya request; implementación pendiente de endpoint |
+| CA-02 | Una wallet por usuario, estado inicial `active`; crear sin KYC | `GET /wallet` (200, 401, 404), `POST /wallet` (201, 401, 409) | `WalletPage`, `WalletService`; ID `wallet_<16 hex>` según backend | GET 404/200 y POST 201/409; API real y Tester pendientes |
 | CA-03 | Contactos pertenecen a usuario y guardan wallet_id existente | No disponible en el backend actual | `ContactsPage` informativa; sin servicio HTTP | Verificar que no haya request; implementación pendiente de endpoint |
 | CA-04 | Basic Auth sobre HTTPS, genérico en 401; decisión del usuario en CA-04 de la Issue | `POST /auth/login` (200, 401) | Ingreso, guard e `AuthService` | Aceptación de credenciales y error genérico; agente Tester |
 | CA-05 | KYC autenticado; campos previstos por el contrato, sin endpoint en backend actual | No disponible en el backend actual | Estado informativo dentro de `WalletPage`; sin formulario ni servicio HTTP | Verificar que no haya request; implementación pendiente de endpoint |
@@ -81,11 +81,11 @@
 
 ## 7. Diseño de la solución
 
-- **Conexión:** `environment.development.ts` conserva la URL de pruebas y `useMocks = false`; producción mantiene `apiBaseUrl = ''`. La integración actual solo usa `POST /users` y `POST /auth/login`; no llamar wallet, KYC ni contactos aunque estén descritos en el contrato. CORS contempla `localhost:4200`.
-- **Rutas:** `/ingresar`, `/registro`, `/wallet` y `/contactos`; proteger el workspace con guard funcional. Registro público. Wallet/contactos se mantienen como rutas informativas sin requests al cargar.
-- **Componentes:** ingreso y registro funcionales; wallet/contactos muestran “función no disponible” hasta que el backend implemente sus endpoints.
-- **Servicios/estado:** servicio de usuario y sesión Basic Auth solo para crear cuenta e ingresar; credenciales solo en memoria y borradas al cerrar sesión. No usar Web Storage, cookies del cliente ni logs para credenciales.
-- **HTTP/modelos:** interceptor funcional para Basic Auth en solicitudes protegidas; errores 401 genéricos. Wallet, KYC y contactos no tienen formularios activos ni hacen requests.
+- **Conexión:** `environment.development.ts` usa la URL temporal ngrok y `useMocks = false`; producción mantiene `apiBaseUrl = ''`. El interceptor añade `ngrok-skip-browser-warning: true` en desarrollo; Quarkus permite esa cabecera por CORS. Rutas activas: `/users`, `/auth/login`, `/wallet`.
+- **Rutas:** `/ingresar`, `/registro`, `/wallet` y `/contactos`; el workspace está protegido por guard. Registro es público; login y wallet usan Basic Auth.
+- **Componentes:** ingreso/registro funcionales; wallet permite consultar estado, generar tras 404 o desde el estado de error, y mostrar `wallet_id`/`payments_enabled`. Contactos y KYC continúan informativos.
+- **Servicios/estado:** sesión Basic Auth conserva email/password solo en memoria. WalletService ofrece GET y POST; no se invocan servicios de KYC ni contactos.
+- **HTTP/modelos:** el interceptor añade Basic Auth solo a endpoints protegidos y el header de bypass ngrok en todas las solicitudes de desarrollo. `wallet_id` usa `wallet_<16 hex>` por decisión del usuario, en divergencia con el UUID v4 indicado en ADR-001.
 - **Dirección visual:** tomar como base el prototipo ALiaDA: fondo `#F2F4F9`, superficies blancas, navy `#0E2A66`/rail `#0A1B40`, acento naranja `#FF6A2B`; Bricolage Grotesque para display, Figtree para cuerpo y JetBrains Mono para IDs. Panel de marca oscuro junto al formulario en escritorio; flujo apilado en móvil; tokens SCSS, foco visible, etiquetas asociadas, errores anunciados y movimiento reducido.
 - **Revisión de skills:** el resultado local de UI/UX sugirió un patrón landing de “Trust & Authority + Conversion”, paleta oro/púrpura e IBM Plex; se descarta por no corresponder al flujo real ni a la referencia. Se conserva solo la guía pertinente de formularios simples, contraste, foco y responsive. `frontend-design` exige revisar la propuesta antes de implementar; esta dirección queda sujeta a la aprobación del plan.
 - **Interacciones:** CSS nativo discreto; GSAP no aplica.
@@ -107,7 +107,7 @@ No usar datos personales reales. Las validaciones de integración, si se autoriz
 | 3 | Configurar base URL por entorno y bloquear requests sin host | `src/environments/`, interceptor API | Desarrollo: URL ngrok y `useMocks=false`; producción: base vacía con error de configuración | Hecho |
 | 4 | Instalar y configurar linter tras verificar rango de Angular DevKit | `package.json`, `angular.json`, `eslint.config.js` | `ng add @angular-eslint/schematics@22.6.0 --defaults` | Hecho; target `lint` configurado y pasó |
 | 5 | Implementar modelos, servicios HTTP, Basic Auth en memoria, guard e interceptor solo para endpoints disponibles | `src/app/core/`, `src/app/features/auth/` | Sin comando adicional | Hecho |
-| 6 | Implementar registro/ingreso; mantener wallet/contactos como estados informativos sin requests | Páginas auth, wallet y contactos | Sin comando adicional | Hecho; no inicializa servicios de endpoints ausentes |
+| 6 | Implementar registro/ingreso y wallet GET/POST; mantener contactos/KYC informativos | Páginas auth, wallet y contactos | Sin comando adicional | Hecho; consultas y creación de wallet habilitadas |
 | 7 | Ejecutar build/lint y validar que no hay tráfico a endpoints ausentes | Proyecto Angular | `npm run build`, `npx ng lint`, Playwright/network | Build/lint en verde; comprobación de red de esta corrección pendiente |
 | 8 | Iniciar servidor para revisión; entregar URL local y ofrecer handoff al Frontend Tester | Proyecto Angular | `ng serve --port 4200` | Hecho; smoke visual en login/registro y guard; pruebas funcionales del Tester pendientes |
 
@@ -146,6 +146,7 @@ No usar datos personales reales. Las validaciones de integración, si se autoriz
 | 2026-10-16 | Se intentó `GET /wallet` por la ruta descrita en OpenAPI; el usuario aclaró que ese endpoint no existe actualmente. No volver a solicitarlo. |
 | 2026-10-16 | Confirmar que el backend actual solo tiene dos endpoints: crear cuenta e ingresar; `GET /wallet` no existe. |
 | 2026-10-16 | Aprobar mantener wallet y contactos visibles pero informativos; no invocar endpoints wallet/contactos/KYC hasta que estén disponibles. Esta decisión supersede la integración prevista anteriormente para esas pantallas. |
+| 2026-10-16 | Aprobar `ngrok-skip-browser-warning: true` en solicitudes dev y permitirlo en CORS de Quarkus; Basic Auth no cambia. |
 
 ## 13. Bitácora de ejecución
 
@@ -177,12 +178,16 @@ No usar datos personales reales. Las validaciones de integración, si se autoriz
 | 2026-10-16 | Validación tras limitar endpoints | `npm run build`: Application bundle generation complete. `npx ng lint`: “All files pass linting.” |
 | 2026-10-16 | Confirmación de endpoints disponibles | El usuario confirmó que el backend actual expone solo creación e ingreso; `GET /wallet` no existe. Wallet/contactos/KYC quedan visibles pero sin requests. |
 | 2026-10-16 | Verificación de rutas tras el ajuste | Navegar sin sesión a `/wallet` redirige a `/ingresar`; consola sin errores. El flujo post-login no se ejercitó con credenciales, pero las páginas quedan en estado informativo y no inicializan llamadas. |
+| 2026-10-16 | Diagnóstico interstitial/CORS ngrok | GET sin bypass devolvió la pantalla `ERR_NGROK_6024`. Con `ngrok-skip-browser-warning: true`, GET `/wallet` sin credenciales llegó a Quarkus y devolvió 401 JSON con `Access-Control-Allow-Origin: http://localhost:4200`. |
+| 2026-10-16 | Preflight ngrok | OPTIONS `/wallet` desde `localhost:4200` con `authorization,ngrok-skip-browser-warning`: HTTP 200; `Access-Control-Allow-Headers` incluye `Content-Type,Authorization,ngrok-skip-browser-warning`. |
+| 2026-10-16 | Implementación bypass dev | Angular añade el header ngrok en requests del interceptor; `application.properties` permite el header en CORS. Build y lint en verde; no se enviaron credenciales ni POST. |
 
 ## 14. Desviaciones del plan
 | Fecha | Desviación | Motivo | Aprobada |
 |---|---|---|---|
 | 2026-10-16 | Separar URL temporal por entorno y bloquear API si producción no tiene host | Evitar que el build de producción envíe datos a la base pública temporal | Sí; usuario eligió la opción “Solo desarrollo; producción sin host” |
 | 2026-10-16 | Mantener wallet/contactos como páginas informativas sin requests; no integrar KYC | El backend solo implementa registro e ingreso | Sí; mini-plan aprobado por el usuario |
+| 2026-10-16 | Añadir header bypass ngrok solo al flujo de desarrollo y permitirlo en CORS | Ngrok interponía un interstitial sin cabecera CORS | Sí; usuario aprobó cambio frontend/backend |
 
 ## 15. Hallazgos secundarios (fuera de alcance)
 
@@ -196,9 +201,9 @@ No usar datos personales reales. Las validaciones de integración, si se autoriz
 | CA | Implementado en | Prueba | Estado |
 |---|---|---|---|
 | CA-01 | `RegistrationPage` y `UserService` | Pendiente de Frontend Tester | Implementado — pendiente de pruebas |
-| CA-02 | No implementado; endpoint wallet ausente | No aplica hasta que exista endpoint | Pendiente de backend real |
+| CA-02 | `WalletPage` y `WalletService` (`GET/POST /wallet`) | Pendiente de Frontend Tester y respuesta autenticada del backend | Implementado — pendiente de pruebas |
 | CA-03 | No implementado; endpoints de contactos ausentes | No aplica hasta que existan endpoints | Pendiente de backend real |
 | CA-04 | `LoginPage`, `AuthSessionService` y `apiInterceptor` | Pendiente de Frontend Tester | Implementado con desviación Basic Auth aprobada — pendiente de pruebas |
 | CA-05 | No implementado; endpoint KYC ausente | No aplica hasta que exista endpoint | Pendiente de backend real |
-| CA-06 | No implementado; endpoints wallet/KYC ausentes | No aplica hasta que existan endpoints | Pendiente de backend real |
+| CA-06 | `WalletPage` muestra `payments_enabled`; el endpoint KYC no se integra | La validación del estado depende de GET `/wallet`; KYC pendiente de backend | Parcial — pendiente de endpoint y flujo KYC |
 | CA-07 | Backend; fuera del alcance frontend | No aplica a este plan | No aplicable |

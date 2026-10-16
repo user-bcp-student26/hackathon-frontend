@@ -1,26 +1,24 @@
 <section class="page-heading">
   <p class="eyebrow">H-01 · Wallet</p>
   <h2>Mi wallet</h2>
-  <p>Genera tu wallet y completa la verificación para habilitar pagos de bajo monto.</p>
+  <p>Genera tu wallet y consulta su estado.</p>
 </section>
 
-@if (walletState() === 'unavailable') {
-  <section class="content-panel availability-panel" role="status" aria-live="polite">
-    <p class="eyebrow">Función no disponible</p>
-    <h3>Estamos preparando esta sección</h3>
-    <p>El backend actual solo permite crear una cuenta e ingresar. Esta pantalla no consulta wallet ni KYC.</p>
-  </section>
-} @else {
-  @if (errorMessage()) {
-    <p class="form-alert page-alert" role="alert" aria-live="polite">{{ errorMessage() }}</p>
-  }
+@if (errorMessage()) {
+  <p class="form-alert page-alert" role="alert" aria-live="polite">{{ errorMessage() }}</p>
+}
 
-  @if (walletState() === 'loading') {
+@if (walletState() === 'loading') {
   <p class="status-line" role="status" aria-live="polite">Cargando el estado de tu wallet…</p>
 } @else if (walletState() === 'error') {
-  <section class="content-panel">
+  <section class="content-panel wallet-empty">
     <h3>No pudimos cargar tu wallet</h3>
-    <button class="button button--secondary" type="button" (click)="loadWallet()">Reintentar</button>
+    <div class="wallet-empty__actions">
+      <button class="button button--secondary" type="button" (click)="loadWallet()">Reintentar</button>
+      <button class="button button--primary" type="button" [disabled]="loadingAction()" (click)="createWallet()">
+        {{ loadingAction() ? 'Generando…' : 'Generar mi wallet' }}
+      </button>
+    </div>
   </section>
 } @else if (walletState() === 'missing') {
   <section class="content-panel wallet-empty">
@@ -32,90 +30,26 @@
     </button>
   </section>
 } @else if (wallet(); as currentWallet) {
-  <div class="wallet-grid">
-    <section class="content-panel wallet-summary" aria-labelledby="wallet-summary-title">
-      <div class="wallet-summary__heading">
-        <div>
-          <p class="eyebrow">Tu identificador</p>
-          <h3 id="wallet-summary-title" class="wallet-id">{{ currentWallet.wallet_id }}</h3>
-        </div>
-        <span class="status-pill status-pill--active">Activa</span>
+  <section class="content-panel wallet-summary" aria-labelledby="wallet-summary-title">
+    <div class="wallet-summary__heading">
+      <div>
+        <p class="eyebrow">Tu identificador</p>
+        <h3 id="wallet-summary-title" class="wallet-id">{{ currentWallet.wallet_id }}</h3>
       </div>
-      <p class="wallet-summary__help">Comparte este wallet_id para que puedan registrarte como contacto.</p>
+      <span class="status-pill status-pill--active">Activa</span>
+    </div>
+    <p class="wallet-summary__help">Tu wallet está asociada a tu cuenta.</p>
 
-      @if (currentWallet.payments_enabled) {
-        <div class="payment-state payment-state--enabled" role="status">
-          <h4>Pagos habilitados</h4>
-          <p>Tu identidad está aprobada y puedes usar los pagos de bajo monto.</p>
-        </div>
-      } @else {
-        <div class="payment-state payment-state--blocked" role="status">
-          <h4>Pagos aún no habilitados</h4>
-          <p>Completa y aprueba la verificación de identidad para habilitarlos.</p>
-        </div>
-      }
-    </section>
-
-    <section class="content-panel verification-panel" aria-labelledby="verification-title">
-      <div class="panel-heading">
-        <div>
-          <p class="eyebrow">Identidad</p>
-          <h3 id="verification-title">Verificación KYC</h3>
-        </div>
-        @if (verification(); as currentVerification) {
-          <span class="status-pill" [class.status-pill--approved]="currentVerification.status === 'approved'" [class.status-pill--pending]="currentVerification.status === 'pending'" [class.status-pill--rejected]="currentVerification.status === 'rejected'">
-            @switch (currentVerification.status) {
-              @case ('approved') { Aprobada }
-              @case ('pending') { Pendiente }
-              @case ('rejected') { Rechazada }
-            }
-          </span>
-        }
+    @if (currentWallet.payments_enabled) {
+      <div class="payment-state payment-state--enabled" role="status">
+        <h4>Pagos habilitados</h4>
+        <p>El backend indica que los pagos están habilitados.</p>
       </div>
-
-      @if (verificationState() === 'loading') {
-        <p class="status-line" role="status">Consultando tu verificación…</p>
-      } @else if (verificationState() === 'ready' && verification()?.status !== 'rejected' && verification(); as currentVerification) {
-        <p class="verification-message" role="status" aria-live="polite">
-          {{ currentVerification.message || (currentVerification.status === 'approved' ? 'Tu identidad está aprobada.' : 'Revisa tus datos y vuelve a consultar el estado de tu verificación.') }}
-        </p>
-      } @else if (verificationState() === 'missing' || isStatus('rejected')) {
-        <p class="verification-message">Ingresa los datos de identidad para solicitar la verificación.</p>
-        <form class="verification-form" [formGroup]="verificationForm" (ngSubmit)="submitVerification()" novalidate>
-          <div class="form-field">
-            <label for="kyc-document-type">Tipo de documento</label>
-            <select id="kyc-document-type" class="form-control" formControlName="documentType">
-              <option value="DNI">DNI</option>
-              <option value="CE">Carné de extranjería</option>
-              <option value="PASSPORT">Pasaporte</option>
-            </select>
-          </div>
-          <div class="form-field">
-            <label for="kyc-document-number">Número de documento</label>
-            <input id="kyc-document-number" class="form-control" type="text" formControlName="documentNumber" maxlength="20" autocomplete="off" aria-describedby="kyc-document-number-error" />
-            <span class="field-error" id="kyc-document-number-error">{{ fieldError(verificationForm.controls.documentNumber, 'el número de documento') }}</span>
-          </div>
-          <div class="form-field">
-            <label for="kyc-full-name">Nombre completo</label>
-            <input id="kyc-full-name" class="form-control" type="text" formControlName="fullName" maxlength="120" autocomplete="name" aria-describedby="kyc-full-name-error" />
-            <span class="field-error" id="kyc-full-name-error">{{ fieldError(verificationForm.controls.fullName, 'tu nombre completo') }}</span>
-          </div>
-          <div class="form-field">
-            <label for="kyc-birth-date">Fecha de nacimiento</label>
-            <input id="kyc-birth-date" class="form-control" type="date" formControlName="birthDate" aria-describedby="kyc-birth-date-error" />
-            <span class="field-error" id="kyc-birth-date-error">{{ fieldError(verificationForm.controls.birthDate, 'tu fecha de nacimiento') }}</span>
-          </div>
-          <button class="button button--primary" type="submit" [disabled]="loadingAction()">
-            {{ loadingAction() ? 'Enviando…' : 'Solicitar verificación' }}
-          </button>
-        </form>
-      } @else if (verificationState() === 'error') {
-        <p class="verification-message">No pudimos consultar el estado KYC.</p>
-        <button class="button button--secondary" type="button" (click)="loadVerification()">Reintentar</button>
-      }
-    </section>
-  </div>
-
-  <a class="wallet-contacts-link" routerLink="/contactos">Ir a mis contactos</a>
-  }
+    } @else {
+      <div class="payment-state payment-state--blocked" role="status">
+        <h4>Pagos no habilitados</h4>
+        <p>La wallet está activa; el backend aún no habilita pagos.</p>
+      </div>
+    }
+  </section>
 }

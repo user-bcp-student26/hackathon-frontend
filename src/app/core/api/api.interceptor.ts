@@ -29,10 +29,10 @@ export const apiInterceptor: HttpInterceptorFn = (request, next) => {
     request.method === 'POST' && request.url === '/users';
   const isLogin = request.method === 'POST' && request.url === '/auth/login';
   const authorization = authSession.authorizationHeader();
-  const headers =
-    !isPublicRegistration && !isLogin && authorization
-      ? request.headers.set('Authorization', authorization)
-      : request.headers;
+  let headers = request.headers.set('ngrok-skip-browser-warning', 'true');
+  if (!isPublicRegistration && !isLogin && authorization) {
+    headers = headers.set('Authorization', authorization);
+  }
   const apiRequest = request.clone({
     url: new URL(request.url, baseUrl).toString(),
     headers,
