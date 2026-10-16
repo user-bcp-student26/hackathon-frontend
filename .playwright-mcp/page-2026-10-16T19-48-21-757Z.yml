@@ -1,0 +1,31 @@
+- generic [ref=f6e5]:
+  - complementary "Aliada Wallet" [ref=f6e6]:
+    - link "Aliada Wallet, inicio" [ref=f6e7] [cursor=pointer]:
+      - /url: /ingresar
+      - generic [ref=f6e9]: ALiaDA
+      - generic [ref=f6e10]: Tu billetera aliada
+    - generic [ref=f6e11]:
+      - paragraph [ref=f6e12]: Tu billetera digital
+      - heading "Paga, cobra y mueve tu plata con una aliada." [level=1] [ref=f6e13]
+      - paragraph [ref=f6e14]: Tu billetera digital para pagar a tus contactos desde el navegador, de forma segura y sin complicaciones.
+    - list "Pasos de tu cuenta" [ref=f6e15]:
+      - listitem [ref=f6e16]: Crea tu cuenta con tus datos
+      - listitem [ref=f6e18]: Genera tu wallet al instante
+      - listitem [ref=f6e20]: Verifica tu identidad para habilitar pagos
+  - main [ref=f6e22]:
+    - region [ref=f6e23]:
+      - paragraph [ref=f6e24]: Bienvenida
+      - heading "Ingresa a tu billetera" [level=2] [ref=f6e25]
+      - paragraph [ref=f6e26]: Usa el correo y la contraseña de tu cuenta.
+      - generic [ref=f6e27]:
+        - generic [ref=f6e28]:
+          - generic [ref=f6e29]: Correo electrónico
+          - textbox "Correo electrónico" [ref=f6e30]
+        - generic [ref=f6e31]:
+          - generic [ref=f6e32]: Contraseña
+          - textbox "Contraseña" [ref=f6e33]
+        - button "Ingresar" [ref=f6e34] [cursor=pointer]
+      - paragraph [ref=f6e35]:
+        - text: ¿Aún no tienes cuenta?
+        - link "Crear cuenta" [ref=f6e36] [cursor=pointer]:
+          - /url: /registro

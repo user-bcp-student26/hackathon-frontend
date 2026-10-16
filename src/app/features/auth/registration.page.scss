@@ -1,0 +1,56 @@
+@use '../../../styles/breakpoints' as bp;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.auth-form > .button {
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+.registration-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.registration-grid__wide {
+  grid-column: 1 / -1;
+}
+
+.field-error:empty {
+  display: none;
+}
+
+.registration-success {
+  display: grid;
+  gap: var(--space-3);
+  padding-top: var(--space-5);
+}
+
+.registration-success h3 {
+  font-size: var(--font-size-4xl);
+}
+
+.registration-success p:not(.registration-success__eyebrow) {
+  color: var(--color-muted);
+}
+
+.registration-success__eyebrow {
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.registration-success .button {
+  margin-top: var(--space-3);
+}
+
+@media (max-width: bp.$mobile) {
+  .registration-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .registration-grid__wide {
+    grid-column: auto;
+  }
+}

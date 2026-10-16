@@ -1,0 +1,42 @@
+<div class="workspace-layout">
+  <aside class="workspace-rail">
+    <a class="workspace-brand" routerLink="/wallet" aria-label="Aliada Wallet, mi wallet">
+      <span class="workspace-brand__mark" aria-hidden="true">A</span>
+      <span><strong>AL<span>ia</span>DA</strong><small>Tu billetera aliada</small></span>
+    </a>
+
+    <nav class="workspace-nav" aria-label="Navegación principal">
+      <a routerLink="/wallet" routerLinkActive="is-active" ariaCurrentWhenActive="page">
+        Mi wallet
+      </a>
+      <a routerLink="/contactos" routerLinkActive="is-active" ariaCurrentWhenActive="page">
+        Contactos
+      </a>
+    </nav>
+
+    <div class="workspace-account">
+      @if (currentUser(); as user) {
+        <span class="workspace-account__name">{{ user.name }}</span>
+        <span class="workspace-account__email">{{ user.email }}</span>
+      }
+      <button class="workspace-logout" type="button" (click)="logout()">
+        Cerrar sesión
+      </button>
+    </div>
+  </aside>
+
+  <div class="workspace-main">
+    <header class="workspace-topbar">
+      <div>
+        <p class="eyebrow">Aliada Wallet</p>
+        <h1>Tu cuenta</h1>
+      </div>
+      @if (currentUser(); as user) {
+        <span class="workspace-topbar__user">{{ user.name }}</span>
+      }
+    </header>
+    <main class="workspace-content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

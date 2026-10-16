@@ -1,0 +1,190 @@
+@use '../../../styles/breakpoints' as bp;
+
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+.workspace-layout {
+  display: grid;
+  min-height: 100dvh;
+  grid-template-columns: var(--width-sidebar) minmax(0, 1fr);
+  background: var(--color-background);
+}
+
+.workspace-rail {
+  position: sticky;
+  top: 0;
+  display: flex;
+  height: 100dvh;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-5) var(--space-4);
+  overflow-y: auto;
+  background: var(--color-side);
+  color: var(--color-side-text);
+}
+
+.workspace-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-on-dark);
+  text-decoration: none;
+}
+
+.workspace-brand__mark {
+  display: grid;
+  width: var(--size-brand-mark);
+  aspect-ratio: 1;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-family: var(--font-display);
+  font-size: var(--font-size-3xl);
+  font-weight: 800;
+}
+
+.workspace-brand strong,
+.workspace-brand small {
+  display: block;
+}
+
+.workspace-brand strong {
+  font-family: var(--font-display);
+  font-size: var(--font-size-2xl);
+}
+
+.workspace-brand strong span {
+  color: var(--color-accent);
+}
+
+.workspace-brand small {
+  color: var(--color-side-text);
+  font-size: var(--font-size-xs);
+}
+
+.workspace-nav {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.workspace-nav a {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  color: var(--color-side-text);
+  text-decoration: none;
+}
+
+.workspace-nav a:hover,
+.workspace-nav a.is-active {
+  background: var(--color-side-strong);
+  color: var(--color-on-dark);
+}
+
+.workspace-account {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding: var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--color-side-strong);
+}
+
+.workspace-account__name {
+  color: var(--color-on-dark);
+  font-weight: 700;
+}
+
+.workspace-account__email {
+  overflow-wrap: anywhere;
+  font-size: var(--font-size-xs);
+}
+
+.workspace-logout {
+  width: fit-content;
+  margin-top: var(--space-2);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-side-text);
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: var(--underline-offset);
+  cursor: pointer;
+}
+
+.workspace-main {
+  min-width: 0;
+}
+
+.workspace-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  min-height: var(--size-topbar);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) clamp(var(--space-5), 4vw, var(--space-9));
+  border-bottom: var(--size-border) solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.workspace-topbar h1 {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-2xl);
+}
+
+.workspace-topbar__user {
+  color: var(--color-muted);
+  font-size: var(--font-size-compact);
+}
+
+.workspace-content {
+  width: min(100%, var(--width-page));
+  margin-inline: auto;
+  padding: var(--space-6) clamp(var(--space-5), 4vw, var(--space-9)) var(--space-13);
+}
+
+@media (max-width: bp.$workspace) {
+  .workspace-layout {
+    display: block;
+  }
+
+  .workspace-rail {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 5;
+    height: auto;
+    gap: 0;
+    padding: var(--space-2) var(--space-3) max(var(--space-2), env(safe-area-inset-bottom));
+    overflow: visible;
+  }
+
+  .workspace-brand,
+  .workspace-account {
+    display: none;
+  }
+
+  .workspace-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  .workspace-nav a {
+    padding: var(--space-3);
+    text-align: center;
+  }
+
+  .workspace-topbar {
+    min-height: var(--size-topbar-mobile);
+    padding-inline: var(--space-4);
+  }
+
+  .workspace-content {
+    padding: var(--space-5) var(--space-4) var(--space-13);
+  }
+}

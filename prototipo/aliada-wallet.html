@@ -1,0 +1,2003 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tu Billetera ALiaDA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: app shell — rail de navegación oscuro a la izquierda (barra inferior en móvil), topbar fija, vistas por historia W1–W6 con regiones que se refrescan solas */
+:root{
+  --bg:#F2F4F9; --surface:#FFFFFF; --surface-2:#F6F8FC; --line:#E0E5EF; --line-2:#CBD3E2;
+  --fg:#0C1A33; --muted:#5D6981; --faint:#8C97AC;
+  --brand:#0E2A66; --brand-2:#1D4ED8; --brand-soft:#E3EAFB;
+  --accent:#FF6A2B; --accent-2:#FF8F5C; --accent-soft:#FFEADF; --on-accent:#FFFFFF;
+  --ok:#0F8A53; --ok-soft:#DCF3E7; --warn:#B26B00; --warn-soft:#FFF0CF; --bad:#CC3333; --bad-soft:#FCE2E2; --info:#2459D6; --info-soft:#E1E9FD; --violet:#6B46C1; --violet-soft:#EDE6FB;
+  --side:#0A1B40; --side-2:#12285A; --side-fg:#B9C6E4; --side-active:#FFFFFF;
+  --shadow:0 1px 2px rgba(12,26,51,.05),0 10px 30px -14px rgba(12,26,51,.22);
+  --shadow-lg:0 30px 80px -20px rgba(12,26,51,.45);
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"Figtree","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  --r:14px; --r-sm:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#070F20; --surface:#0E1A31; --surface-2:#12203B; --line:#1E2D4B; --line-2:#2B3C5F;
+  --fg:#E7ECF6; --muted:#98A5BF; --faint:#6C7A96;
+  --brand:#8FB0FF; --brand-2:#6E95FF; --brand-soft:#16264A;
+  --accent:#FF7A40; --accent-2:#FF9B6B; --accent-soft:#3A1F14; --on-accent:#1A0B04;
+  --ok:#3DD08E; --ok-soft:#0F2E22; --warn:#F2B544; --warn-soft:#33260C; --bad:#FF6B6B; --bad-soft:#3A1518; --info:#7AA2FF; --info-soft:#14234A; --violet:#B597FF; --violet-soft:#241A40;
+  --side:#050C1C; --side-2:#0F1D3D; --side-fg:#95A3C2; --side-active:#FFFFFF;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.6);
+  --shadow-lg:0 30px 80px -20px rgba(0,0,0,.8);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#070F20; --surface:#0E1A31; --surface-2:#12203B; --line:#1E2D4B; --line-2:#2B3C5F;
+  --fg:#E7ECF6; --muted:#98A5BF; --faint:#6C7A96;
+  --brand:#8FB0FF; --brand-2:#6E95FF; --brand-soft:#16264A;
+  --accent:#FF7A40; --accent-2:#FF9B6B; --accent-soft:#3A1F14; --on-accent:#1A0B04;
+  --ok:#3DD08E; --ok-soft:#0F2E22; --warn:#F2B544; --warn-soft:#33260C; --bad:#FF6B6B; --bad-soft:#3A1518; --info:#7AA2FF; --info-soft:#14234A; --violet:#B597FF; --violet-soft:#241A40;
+  --side:#050C1C; --side-2:#0F1D3D; --side-fg:#95A3C2; --side-active:#FFFFFF;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.6);
+  --shadow-lg:0 30px 80px -20px rgba(0,0,0,.8);
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+img{max-width:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{min-height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--surface)}
+h1,h2,h3,h4{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px;border-radius:6px}
+.mono{font-family:var(--f-mono);font-size:.86em}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- shell ---------- */
+.app{display:grid;grid-template-columns:252px minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:0;height:100vh;background:var(--side);color:var(--side-fg);display:flex;flex-direction:column;padding:22px 14px;gap:22px;overflow-y:auto}
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px;text-decoration:none;color:#fff}
+.brand svg{flex:none}
+.brand b{font-family:var(--f-display);font-size:21px;font-weight:800;letter-spacing:-.02em;line-height:1}
+.brand b i{font-style:normal;color:var(--accent)}
+.brand small{display:block;font-size:11px;color:var(--side-fg);letter-spacing:.04em;margin-top:3px}
+.nav{display:flex;flex-direction:column;gap:3px}
+.nav-label{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#6F80A8;padding:12px 10px 6px;font-weight:700}
+.nav a{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:10px;text-decoration:none;color:var(--side-fg);font-weight:500;position:relative;transition:background .2s,color .2s}
+.nav a:hover{background:var(--side-2);color:#fff}
+.nav a.on{background:var(--side-2);color:var(--side-active)}
+.nav a.on::before{content:"";position:absolute;left:-14px;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--accent)}
+.nav a .wtag{margin-left:auto;font-family:var(--f-mono);font-size:10.5px;padding:1px 6px;border-radius:5px;background:rgba(255,255,255,.07);color:#8FA0C6}
+.nav a.on .wtag{background:var(--accent);color:#fff}
+.nav a .cnt{margin-left:auto;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--accent);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center}
+.nav svg{width:18px;height:18px;flex:none}
+.side-foot{margin-top:auto;padding:12px;border-radius:12px;background:var(--side-2);font-size:12px;line-height:1.45}
+.side-foot b{color:#fff;display:block;margin-bottom:2px}
+
+.main-wrap{min-width:0;display:flex;flex-direction:column}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:color-mix(in srgb,var(--surface) 86%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding-block:12px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px));display:flex;align-items:center;gap:14px}
+.crumb{display:flex;flex-direction:column;min-width:0}
+.crumb small{font-size:11.5px;color:var(--muted)}
+.crumb strong{font-family:var(--f-display);font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+.icon-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;transition:transform .15s,background .2s}
+.icon-btn:hover{background:var(--surface-2)}
+.icon-btn:active{transform:scale(.94)}
+.icon-btn svg{width:18px;height:18px}
+.who{display:flex;align-items:center;gap:10px;padding:4px 12px 4px 4px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+.who .txt{display:flex;flex-direction:column;line-height:1.15}
+.who .txt b{font-size:13px}
+.who .txt span{font-size:11px;color:var(--muted)}
+main{padding-block:26px 120px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px));max-width:1320px;width:100%}
+
+/* ---------- primitives ---------- */
+.avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;color:#fff;flex:none;letter-spacing:.02em}
+.avatar.lg{width:48px;height:48px;font-size:16px}
+.avatar.sq{border-radius:11px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;line-height:1.5}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.pill.info{background:var(--info-soft);color:var(--info)}
+.pill.violet{background:var(--violet-soft);color:var(--violet)}
+.pill.mute{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+.pill.live::before{animation:pulse 1.2s infinite}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;border-radius:11px;border:1px solid transparent;font-weight:600;font-size:14px;text-decoration:none;transition:transform .12s,background .2s,box-shadow .2s,opacity .2s;white-space:nowrap}
+.btn svg{width:17px;height:17px}
+.btn:active{transform:scale(.97)}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.btn.primary{background:var(--accent);color:var(--on-accent);box-shadow:0 6px 18px -8px var(--accent)}
+.btn.primary:hover{background:var(--accent-2)}
+.btn.dark{background:var(--brand);color:var(--surface)}
+.btn.ghost{background:var(--surface);border-color:var(--line);color:var(--fg)}
+.btn.ghost:hover{background:var(--surface-2);border-color:var(--line-2)}
+.btn.soft{background:var(--brand-soft);color:var(--brand-2)}
+.btn.danger{background:var(--bad-soft);color:var(--bad)}
+.btn.okb{background:var(--ok-soft);color:var(--ok)}
+.btn.sm{padding:6px 11px;font-size:12.5px;border-radius:9px}
+.btn.block{width:100%}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;min-width:0}
+.panel-h{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.panel-h h3{font-size:16.5px}
+.panel-h .sub{font-size:12.5px;color:var(--muted)}
+.panel-h .end{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.seg{display:inline-flex;padding:3px;border-radius:11px;background:var(--surface-2);border:1px solid var(--line);gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted);transition:background .2s,color .2s}
+.seg button.on{background:var(--surface);color:var(--fg);box-shadow:var(--shadow)}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field label{font-size:12.5px;font-weight:600;color:var(--muted)}
+.input{width:100%;padding:11px 13px;border-radius:11px;border:1px solid var(--line-2);background:var(--surface);transition:border-color .2s,box-shadow .2s;min-width:0}
+.input:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 4px var(--brand-soft)}
+.input.err{border-color:var(--bad)}
+.input.okk{border-color:var(--ok)}
+.hint{font-size:12px;color:var(--faint);min-height:18px}
+.hint.err{color:var(--bad)}
+.hint.okk{color:var(--ok)}
+.grid-f{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.grid-f .full{grid-column:1/-1}
+.divider{height:1px;background:var(--line);margin:16px 0}
+.tag{display:inline-grid;place-items:center;font-family:var(--f-mono);font-weight:600;font-size:12px;padding:3px 8px;border-radius:7px;color:#fff}
+.tag.w1{background:#2B6CB0}.tag.w2{background:#B7791F}.tag.w3{background:#2F855A}.tag.w4{background:#6B46C1}.tag.w5{background:#C53060}.tag.w6{background:#2C5282}.tag.hitl{background:#4A5568}
+.empty{padding:28px 16px;text-align:center;color:var(--muted);font-size:13.5px;border:1px dashed var(--line-2);border-radius:12px}
+.kbd{font-family:var(--f-mono);font-size:11.5px;padding:2px 6px;border-radius:6px;background:var(--surface-2);border:1px solid var(--line)}
+.scroll-x{overflow-x:auto}
+
+/* ---------- page head ---------- */
+.page-head{display:flex;align-items:flex-end;gap:18px;margin-bottom:22px;flex-wrap:wrap}
+.page-head .ttl{display:flex;flex-direction:column;gap:8px;min-width:0}
+.page-head .row{display:flex;align-items:center;gap:10px}
+.page-head h1{font-size:clamp(26px,3.2vw,34px);font-weight:800;line-height:1.05}
+.page-head p{color:var(--muted);max-width:62ch}
+.page-head .end{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+
+/* ---------- reveal & loading ---------- */
+.r{animation:rise .55s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0) * 70ms)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shimmer{to{background-position:-200% 0}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.08);opacity:1}100%{transform:scale(1)}}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes slidein{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+@keyframes flash{0%{background:var(--accent-soft)}100%{background:transparent}}
+.sk{border-radius:10px;background:linear-gradient(90deg,var(--surface-2) 0%,var(--line) 40%,var(--surface-2) 80%);background-size:200% 100%;animation:shimmer 1.1s linear infinite}
+.sk-grid{display:grid;gap:16px}
+.spinner{width:16px;height:16px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:spin .7s linear infinite;display:inline-block;flex:none}
+.flash{animation:flash 1.4s ease-out}
+.route-bar{position:fixed;top:env(safe-area-inset-top,0px);left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--brand-2));z-index:80;width:0;opacity:0;transition:width .35s ease,opacity .3s}
+
+/* ---------- dashboard ---------- */
+.dash-top{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px;margin-bottom:18px}
+.balance{position:relative;overflow:hidden;border-radius:20px;padding:26px;background:var(--side);color:#fff;isolation:isolate;min-height:250px;display:flex;flex-direction:column}
+.balance::before{content:"";position:absolute;inset:-40% -20% auto auto;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle at 30% 30%,var(--accent) 0%,transparent 62%);opacity:.55;z-index:-1;animation:float 9s ease-in-out infinite}
+.balance::after{content:"";position:absolute;inset:auto auto -55% -15%;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,#1D4ED8 0%,transparent 65%);opacity:.7;z-index:-1;animation:float 11s ease-in-out infinite reverse}
+@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(-24px,18px)}}
+.balance .rings{position:absolute;right:22px;top:22px;opacity:.9}
+.balance .lbl{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#C5D0EC;font-weight:700;display:flex;align-items:center;gap:8px}
+.balance .lbl button{border:0;background:rgba(255,255,255,.12);width:30px;height:30px;border-radius:9px;display:grid;place-items:center;color:#fff}
+.balance .lbl button svg{width:16px;height:16px}
+.balance .amt{font-family:var(--f-display);font-size:clamp(36px,5vw,52px);font-weight:800;letter-spacing:-.03em;margin:10px 0 4px;line-height:1}
+.balance .meta{color:#C5D0EC;font-size:13px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.balance .qa{margin-top:auto;padding-top:22px;display:flex;gap:10px;flex-wrap:wrap}
+.qa a{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;text-decoration:none;font-weight:600;font-size:13.5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);color:#fff;transition:background .2s,transform .15s}
+.qa a:hover{background:rgba(255,255,255,.2);transform:translateY(-2px)}
+.qa a.main{background:var(--accent);border-color:var(--accent);color:#fff}
+.qa svg{width:17px;height:17px}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:6px;min-width:0;position:relative;overflow:hidden}
+.kpi .k{font-size:12.5px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:7px}
+.kpi .k i{width:8px;height:8px;border-radius:3px;display:inline-block}
+.kpi .v{font-family:var(--f-display);font-size:28px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.kpi .d{font-size:12px;color:var(--faint)}
+.kpi svg.spark{position:absolute;right:12px;bottom:12px;width:84px;height:30px}
+.dash-mid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px;margin-bottom:18px}
+.dash-bot{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px}
+.legend{display:flex;gap:14px;font-size:12.5px;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.chart svg{width:100%;height:auto;display:block}
+.chart .gl{stroke:var(--line);stroke-width:1}
+.chart .ax{fill:var(--faint);font-size:11px;font-family:var(--f-body)}
+.chart .bin{fill:var(--brand-2)}
+.chart .bout{fill:var(--accent)}
+.chart rect.bar{transform-box:fill-box;transform-origin:bottom;animation:grow .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.svc{display:flex;flex-direction:column;gap:4px}
+.svc-row{display:grid;grid-template-columns:minmax(0,1fr) auto 74px;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+.svc-row:last-child{border-bottom:0}
+.svc-row b{font-size:13.5px;display:block}
+.svc-row small{color:var(--muted);font-size:12px}
+.svc-row svg{width:74px;height:26px}
+.tx-list{display:flex;flex-direction:column}
+.tx{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 8px;border-radius:11px;cursor:pointer;transition:background .15s;border:0;background:transparent;text-align:left;width:100%}
+.tx:hover{background:var(--surface-2)}
+.tx .who2{min-width:0}
+.tx .who2 b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx .who2 small{color:var(--muted);font-size:12px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.tx .amt{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.tx .amt b{font-variant-numeric:tabular-nums;font-size:14.5px}
+.tx .amt b.in{color:var(--ok)}
+.tx .amt b.void{text-decoration:line-through;color:var(--faint)}
+.tx.new{animation:slidein .5s ease both, flash 1.6s ease-out}
+.cov{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.cov a{display:flex;flex-direction:column;gap:6px;padding:13px;border-radius:12px;border:1px solid var(--line);text-decoration:none;transition:border-color .2s,transform .15s,background .2s;min-width:0}
+.cov a:hover{border-color:var(--line-2);transform:translateY(-2px);background:var(--surface-2)}
+.cov a b{font-size:13.5px}
+.cov a small{font-size:12px;color:var(--muted);line-height:1.35}
+.cov .bar{height:4px;border-radius:4px;background:var(--line);overflow:hidden}
+.cov .bar i{display:block;height:100%;background:var(--ok);border-radius:4px}
+
+/* ---------- banner ---------- */
+.banner{display:flex;gap:12px;align-items:center;padding:12px 16px;border-radius:12px;margin-bottom:18px;font-size:13.5px;flex-wrap:wrap}
+.banner.warn{background:var(--warn-soft);color:var(--warn)}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.banner svg{width:18px;height:18px;flex:none}
+.banner .btn{margin-left:auto}
+
+/* ---------- onboarding ---------- */
+.two{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:18px;align-items:start}
+.stepper{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:22px}
+.stp{display:flex;flex-direction:column;gap:8px;font-size:12.5px;color:var(--muted);font-weight:600;min-width:0}
+.stp .bar{height:4px;border-radius:4px;background:var(--line);overflow:hidden}
+.stp .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.stp.done .bar i,.stp.on .bar i{width:100%}
+.stp.on{color:var(--fg)}
+.stp.done{color:var(--ok)}
+.stp span{display:flex;gap:6px;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.step-body{animation:slidein .4s ease both}
+.strength{display:flex;gap:4px;margin-top:4px}
+.strength i{flex:1;height:4px;border-radius:3px;background:var(--line);transition:background .3s}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted)}
+.check input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px}
+.drop{border:1.5px dashed var(--line-2);border-radius:14px;padding:22px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;color:var(--muted);transition:border-color .2s,background .2s;cursor:pointer;position:relative}
+.drop:hover,.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop svg{width:26px;height:26px}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.doc-prev{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+.dni{aspect-ratio:1.58;max-width:100%;border-radius:12px;padding:12px;background:linear-gradient(135deg,#DDE7F7,#F5E8DA);color:#22314F;display:grid;grid-template-columns:30% 1fr;gap:10px;font-size:10.5px;position:relative;overflow:hidden;animation:pop .5s ease both}
+.dni .ph{border-radius:8px;background:linear-gradient(160deg,#9BB0D3,#6E83AA);display:grid;place-items:end center;overflow:hidden}
+.dni .ph::after{content:"";width:60%;aspect-ratio:1;border-radius:50% 50% 0 0;background:#E9EEF7;opacity:.8}
+.dni .ln{display:flex;flex-direction:column;gap:3px}
+.dni .ln b{font-size:11.5px}
+.dni .mrz{position:absolute;left:12px;right:12px;bottom:8px;font-family:var(--f-mono);font-size:8.5px;letter-spacing:.06em;opacity:.7;white-space:nowrap;overflow:hidden}
+.doc-img{width:100%;aspect-ratio:1.58;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
+.selfie{aspect-ratio:1.58;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);display:grid;place-items:center;position:relative;overflow:hidden}
+.selfie .face{width:70px;height:70px;border-radius:50%;background:linear-gradient(160deg,#F2C6A0,#C98F68);position:relative;animation:pop .5s ease both}
+.selfie .oval{position:absolute;width:110px;height:130px;border:2px dashed var(--accent);border-radius:50%;animation:spin 8s linear infinite}
+.kyc-list{display:flex;flex-direction:column;gap:10px}
+.kyc-item{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);transition:border-color .3s,background .3s}
+.kyc-item .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--surface-2);color:var(--muted)}
+.kyc-item .ic svg{width:17px;height:17px}
+.kyc-item b{font-size:13.5px;display:block}
+.kyc-item small{font-size:12px;color:var(--muted)}
+.kyc-item.run{border-color:var(--brand-2)}
+.kyc-item.run .ic{color:var(--brand-2);background:var(--brand-soft)}
+.kyc-item.ok .ic{color:var(--ok);background:var(--ok-soft)}
+.kyc-item.warn .ic{color:var(--warn);background:var(--warn-soft)}
+.kyc-item.bad .ic{color:var(--bad);background:var(--bad-soft)}
+.result{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding:12px 0 4px}
+.result .ring{width:92px;height:92px}
+.result .ring circle.bgc{stroke:var(--line)}
+.result .ring .pr{stroke-dasharray:264;stroke-dashoffset:264;animation:draw 1s .1s cubic-bezier(.2,.8,.2,1) forwards}
+.result .ring .ck{stroke-dasharray:60;stroke-dashoffset:60;animation:draw .5s .8s ease forwards}
+.result h2{font-size:24px}
+.result p{color:var(--muted);max-width:46ch}
+.result .acts{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+.code{background:var(--side);color:#D5DEF2;border-radius:12px;padding:14px 16px;font-family:var(--f-mono);font-size:12px;line-height:1.6;overflow-x:auto;white-space:pre;margin:0}
+.code .k{color:#8FB4FF}.code .s{color:#FFB98F}.code .n{color:#7EE2B0}.code .c{color:#6F80A8}.code .m{color:#FF8F5C;font-weight:600}
+table.t{width:100%;border-collapse:collapse;font-size:13px}
+table.t th{text-align:left;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:700;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.t td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
+table.t tr:last-child td{border-bottom:0}
+table.t tr.new td{animation:flash 1.6s ease-out}
+table.t td.r{text-align:right}
+table.t .mono{white-space:nowrap}
+
+/* ---------- pay ---------- */
+.contacts{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
+.ct{display:flex;flex-direction:column;align-items:center;gap:7px;padding:12px 6px;border-radius:13px;border:1.5px solid var(--line);background:var(--surface);transition:border-color .2s,transform .15s,background .2s;text-align:center;min-width:0}
+.ct:hover{transform:translateY(-2px);border-color:var(--line-2)}
+.ct.on{border-color:var(--accent);background:var(--accent-soft)}
+.ct b{font-size:12.5px;line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ct small{font-size:11px;color:var(--muted)}
+.amount-field{display:flex;align-items:baseline;gap:8px;padding:12px 16px;border-radius:14px;border:1.5px solid var(--line-2);background:var(--surface-2);transition:border-color .2s,box-shadow .2s}
+.amount-field:focus-within{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.amount-field span{font-family:var(--f-display);font-size:26px;color:var(--muted);font-weight:700}
+.amount-field input{border:0;background:transparent;font-family:var(--f-display);font-size:38px;font-weight:800;width:100%;min-width:0;outline:none;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:13px;font-weight:600;transition:background .2s,border-color .2s}
+.chip:hover{border-color:var(--line-2);background:var(--surface-2)}
+.chip.on{background:var(--fg);color:var(--surface);border-color:var(--fg)}
+.summary{display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);font-size:13.5px}
+.summary .row{display:flex;justify-content:space-between;gap:10px}
+.summary .row span{color:var(--muted)}
+.stack{display:flex;flex-direction:column;gap:16px}
+.tracker{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--surface);animation:rise .4s ease both}
+.trk-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:14px}
+.trk-steps div{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:var(--faint)}
+.trk-steps div i{height:5px;border-radius:5px;background:var(--line);position:relative;overflow:hidden}
+.trk-steps div.done{color:var(--fg)}
+.trk-steps div.done i{background:var(--ok)}
+.trk-steps div.bad i{background:var(--bad)}
+.trk-steps div.warn i{background:var(--warn)}
+.trk-steps div.now i::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,var(--brand-2),transparent);animation:shimmer 1s linear infinite;background-size:200% 100%}
+.tl{display:flex;flex-direction:column;gap:0;position:relative}
+.tl-i{display:grid;grid-template-columns:16px minmax(0,1fr) auto;gap:10px;font-size:12.5px;padding:5px 0;animation:slidein .35s ease both}
+.tl-i i{width:10px;height:10px;border-radius:50%;margin-top:4px;background:var(--line-2);box-shadow:0 0 0 3px var(--surface);position:relative;z-index:1;justify-self:center}
+.tl-i i.ok{background:var(--ok)}.tl-i i.bad{background:var(--bad)}.tl-i i.warn{background:var(--warn)}.tl-i i.info{background:var(--info)}.tl-i i.violet{background:var(--violet)}
+.tl-i time{color:var(--faint);font-family:var(--f-mono);font-size:11px}
+.hist-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.search{position:relative;flex:1;min-width:160px}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--faint)}
+.search input{padding-left:34px}
+
+/* ---------- QR ---------- */
+.qr-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+.qr-card{border-radius:20px;padding:22px;background:var(--side);color:#fff;display:flex;flex-direction:column;align-items:center;gap:14px;position:relative;overflow:hidden}
+.qr-card::before{content:"";position:absolute;inset:auto -30% -50% auto;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,var(--accent),transparent 65%);opacity:.45}
+.qr-plate{background:#fff;border-radius:16px;padding:12px;position:relative;box-shadow:0 20px 40px -18px rgba(0,0,0,.6)}
+.qr-plate canvas{display:block;width:220px;height:220px;max-width:100%}
+.qr-plate.anim canvas{animation:pop .5s ease both}
+.qr-card .m{font-family:var(--f-display);font-size:20px;font-weight:700;position:relative}
+.qr-card .s{font-size:12.5px;color:#C5D0EC;position:relative;text-align:center}
+.qr-card .payload{font-family:var(--f-mono);font-size:11px;background:rgba(255,255,255,.08);padding:8px 10px;border-radius:9px;word-break:break-all;color:#D5DEF2;position:relative;max-width:100%}
+.read-opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.ropt{display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);text-align:left;position:relative;transition:border-color .2s,transform .15s;min-width:0}
+.ropt:hover{border-color:var(--accent);transform:translateY(-2px)}
+.ropt .ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+.ropt .ic svg{width:19px;height:19px}
+.ropt b{font-size:14px}
+.ropt small{font-size:12px;color:var(--muted)}
+.ropt input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.viewfinder{position:relative;aspect-ratio:4/3;max-width:100%;border-radius:16px;overflow:hidden;background:#0A1222;display:grid;place-items:center}
+.viewfinder img,.viewfinder canvas{max-width:72%;max-height:80%;border-radius:10px;opacity:.9}
+.viewfinder .corners{position:absolute;inset:14%;border-radius:12px;background:
+  linear-gradient(var(--accent),var(--accent)) top left/28px 3px no-repeat,linear-gradient(var(--accent),var(--accent)) top left/3px 28px no-repeat,
+  linear-gradient(var(--accent),var(--accent)) top right/28px 3px no-repeat,linear-gradient(var(--accent),var(--accent)) top right/3px 28px no-repeat,
+  linear-gradient(var(--accent),var(--accent)) bottom left/28px 3px no-repeat,linear-gradient(var(--accent),var(--accent)) bottom left/3px 28px no-repeat,
+  linear-gradient(var(--accent),var(--accent)) bottom right/28px 3px no-repeat,linear-gradient(var(--accent),var(--accent)) bottom right/3px 28px no-repeat}
+.viewfinder .laser{position:absolute;left:14%;right:14%;height:2px;background:var(--accent);box-shadow:0 0 18px 4px var(--accent);animation:laser 1.6s ease-in-out infinite}
+@keyframes laser{0%,100%{top:16%}50%{top:82%}}
+.viewfinder .cap{position:absolute;bottom:10px;left:0;right:0;text-align:center;color:#C5D0EC;font-size:12px}
+.merchants{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.merch{display:flex;gap:10px;align-items:center;padding:11px;border-radius:12px;border:1px solid var(--line);background:var(--surface);text-align:left;transition:border-color .2s,background .2s;min-width:0}
+.merch:hover{border-color:var(--accent);background:var(--accent-soft)}
+.merch b{font-size:13px;display:block}
+.merch small{font-size:11.5px;color:var(--muted)}
+.sheet{border-radius:16px;border:1.5px solid var(--accent);background:var(--surface);padding:18px;animation:rise .45s cubic-bezier(.2,.8,.2,1) both}
+
+/* ---------- idempotency ---------- */
+.idem-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:18px;align-items:start;margin-bottom:18px}
+.keybox{display:flex;gap:8px;align-items:center}
+.keybox .input{font-family:var(--f-mono);font-size:12.5px}
+.resp{display:flex;flex-direction:column;gap:10px;max-height:420px;overflow-y:auto;padding-right:4px}
+.rcard{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);animation:slidein .4s ease both}
+.rcard .code-b{font-family:var(--f-mono);font-weight:700;font-size:13px;padding:4px 8px;border-radius:8px;height:fit-content}
+.rcard .code-b.c2{background:var(--ok-soft);color:var(--ok)}
+.rcard .code-b.c3{background:var(--info-soft);color:var(--info)}
+.rcard .code-b.c4{background:var(--warn-soft);color:var(--warn)}
+.rcard .code-b.c5{background:var(--bad-soft);color:var(--bad)}
+.rcard b{font-size:13.5px;display:block}
+.rcard small{font-size:12px;color:var(--muted);display:block}
+.tests{display:flex;flex-direction:column;gap:8px}
+.test{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border-radius:10px;border:1px solid var(--line);font-size:13px;background:var(--surface)}
+.test .st{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;color:var(--faint)}
+.test .st svg{width:14px;height:14px}
+.test.pass .st{background:var(--ok-soft);color:var(--ok);animation:pop .35s ease both}
+.test.fail .st{background:var(--bad-soft);color:var(--bad)}
+.test.run{border-color:var(--brand-2)}
+.test small{color:var(--faint);font-family:var(--f-mono);font-size:11px}
+.hits{display:inline-grid;place-items:center;min-width:26px;height:22px;border-radius:7px;font-weight:700;font-size:12px;background:var(--surface-2);border:1px solid var(--line)}
+.hits.hot{background:var(--violet-soft);color:var(--violet);border-color:transparent}
+
+/* ---------- faults ---------- */
+.fault-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:18px;align-items:start;margin-bottom:18px}
+.slider{display:flex;flex-direction:column;gap:6px;padding:12px 0;border-bottom:1px solid var(--line)}
+.slider:last-of-type{border-bottom:0}
+.slider .hd{display:flex;justify-content:space-between;align-items:center;font-size:13.5px;font-weight:600;gap:8px}
+.slider .hd small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.slider .val{font-family:var(--f-mono);font-size:13px;font-weight:600;min-width:44px;text-align:right}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.fsm{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:center;position:relative}
+.fsm .col{display:flex;flex-direction:column;gap:10px;position:relative}
+.fsm .col:not(:last-child)::after{content:"";position:absolute;right:-12px;top:50%;width:12px;height:2px;background:var(--line-2)}
+.node{padding:9px 10px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);font-size:12px;font-weight:700;text-align:center;color:var(--faint);transition:all .3s;font-family:var(--f-mono);letter-spacing:.02em}
+.node.v{color:var(--fg);border-color:var(--line-2);background:var(--surface-2)}
+.node.cur{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 4px var(--accent-soft);animation:pop .4s ease both}
+.node.cur.ok{border-color:var(--ok);color:var(--ok);background:var(--ok-soft);box-shadow:0 0 0 4px var(--ok-soft)}
+.node.cur.bad{border-color:var(--bad);color:var(--bad);background:var(--bad-soft);box-shadow:0 0 0 4px var(--bad-soft)}
+.node.cur.warn{border-color:var(--warn);color:var(--warn);background:var(--warn-soft);box-shadow:0 0 0 4px var(--warn-soft)}
+.dist{display:flex;flex-direction:column;gap:9px}
+.dist-row{display:grid;grid-template-columns:96px minmax(0,1fr) 36px;gap:10px;align-items:center;font-size:12.5px}
+.dist-row .tr{height:10px;border-radius:6px;background:var(--surface-2);overflow:hidden}
+.dist-row .tr i{display:block;height:100%;border-radius:6px;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.force{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ---------- recon ---------- */
+.sources{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:18px}
+.src{border-radius:var(--r);border:1px solid var(--line);background:var(--surface);padding:16px;display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden;min-width:0}
+.src .ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;margin-bottom:6px}
+.src .ic svg{width:19px;height:19px}
+.src b{font-size:14.5px}
+.src .big{font-family:var(--f-display);font-size:24px;font-weight:700}
+.src small{color:var(--muted);font-size:12px}
+.src.scan::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--brand-2) 18%,transparent),transparent);background-size:200% 100%;animation:shimmer 1s linear infinite}
+.prog{height:8px;border-radius:6px;background:var(--surface-2);overflow:hidden;border:1px solid var(--line)}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--brand-2),var(--accent));width:0;transition:width .25s linear;border-radius:6px}
+.recon-sum{display:grid;grid-template-columns:auto minmax(0,1fr);gap:20px;align-items:center}
+.donut{width:132px;height:132px}
+.donut circle{fill:none;stroke-width:16}
+.donut .seg{transition:stroke-dasharray .8s cubic-bezier(.2,.8,.2,1)}
+.donut text{fill:var(--fg);font-family:var(--f-display);font-weight:700}
+.donut text.s{fill:var(--muted);font-family:var(--f-body);font-weight:500;font-size:9px}
+.sum-l{display:flex;flex-direction:column;gap:8px;font-size:13px}
+.sum-l div{display:flex;align-items:center;gap:8px}
+.sum-l i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.sum-l b{margin-left:auto;font-variant-numeric:tabular-nums}
+.cellv{font-variant-numeric:tabular-nums;white-space:nowrap}
+.cellv.miss{color:var(--faint)}
+.cellv.diff{color:var(--bad);font-weight:700}
+
+/* ---------- HITL ---------- */
+.hitl-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:18px;align-items:start}
+.tk{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:13px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);text-align:left;width:100%;transition:border-color .2s,background .2s;margin-bottom:8px}
+.tk:hover{border-color:var(--line-2)}
+.tk.on{border-color:var(--accent);background:var(--accent-soft)}
+.tk b{font-size:13.5px;display:block}
+.tk small{font-size:12px;color:var(--muted)}
+.tk .ic{width:36px;height:36px;border-radius:10px;display:grid;place-items:center}
+.tk .ic svg{width:18px;height:18px}
+.sla{font-family:var(--f-mono);font-size:11.5px;color:var(--warn)}
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 16px;font-size:13px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;font-weight:600;min-width:0;overflow-wrap:anywhere}
+
+/* ---------- receipt modal ---------- */
+.modal{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:20px max(16px,env(safe-area-inset-right,0px)) 20px max(16px,env(safe-area-inset-left,0px));background:rgba(5,12,28,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:fade .25s ease both}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.modal-box{width:min(420px,100%);max-height:90vh;overflow-y:auto;animation:rise .4s cubic-bezier(.2,.8,.2,1) both}
+.receipt{background:var(--surface);border-radius:18px 18px 0 0;padding:26px 22px 18px;position:relative;box-shadow:var(--shadow-lg)}
+.receipt-foot{height:16px;background:radial-gradient(circle at 10px -2px,transparent 10px,var(--surface) 10.5px) 0 0/20px 16px repeat-x;filter:drop-shadow(0 10px 18px rgba(0,0,0,.18))}
+.receipt .x{position:absolute;right:14px;top:14px}
+.rc-head{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding-bottom:16px;border-bottom:1.5px dashed var(--line-2)}
+.rc-head .badge{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;animation:pop .5s ease both}
+.rc-head .badge svg{width:30px;height:30px}
+.rc-head .badge.ok{background:var(--ok-soft);color:var(--ok)}
+.rc-head .badge.bad{background:var(--bad-soft);color:var(--bad)}
+.rc-head .badge.warn{background:var(--warn-soft);color:var(--warn)}
+.rc-head .badge.info{background:var(--info-soft);color:var(--info)}
+.rc-head .amt{font-family:var(--f-display);font-size:34px;font-weight:800;letter-spacing:-.02em}
+.rc-body{display:flex;flex-direction:column;gap:9px;padding:16px 0;font-size:13px}
+.rc-body .row{display:flex;justify-content:space-between;gap:12px}
+.rc-body .row span{color:var(--muted)}
+.rc-body .row b{text-align:right;overflow-wrap:anywhere}
+.rc-tl{border-top:1.5px dashed var(--line-2);padding-top:14px}
+
+/* ---------- console & toasts ---------- */
+.fab{position:fixed;right:max(20px,calc(env(safe-area-inset-right,0px) + 20px));bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:70;display:flex;align-items:center;gap:8px;padding:11px 16px;border-radius:999px;border:0;background:var(--side);color:#fff;font-weight:600;font-size:13px;box-shadow:var(--shadow-lg);transition:transform .2s}
+.fab:hover{transform:translateY(-2px)}
+.fab svg{width:17px;height:17px}
+.fab .n{background:var(--accent);border-radius:999px;padding:0 7px;font-size:11.5px;min-width:22px;text-align:center}
+.fab.bump{animation:pop .35s ease}
+.console{position:fixed;right:0;top:0;bottom:0;width:min(460px,100%);z-index:85;background:var(--side);color:#D5DEF2;display:flex;flex-direction:column;transform:translateX(105%);transition:transform .35s cubic-bezier(.2,.8,.2,1);box-shadow:var(--shadow-lg);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-right:env(safe-area-inset-right,0px)}
+.console.open{transform:none}
+.console-h{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.08)}
+.console-h b{font-family:var(--f-display);font-size:16px;color:#fff}
+.console-h .icon-btn{margin-left:auto;background:transparent;border-color:rgba(255,255,255,.14);color:#fff}
+.console-b{flex:1;overflow-y:auto;padding:10px 12px;font-family:var(--f-mono);font-size:11.5px}
+.log{display:grid;grid-template-columns:62px 58px minmax(0,1fr);gap:8px;padding:7px 6px;border-bottom:1px solid rgba(255,255,255,.05);animation:slidein .3s ease both}
+.log time{color:#6F80A8}
+.log .m{font-weight:700}
+.log .m.POST{color:#FF9B6B}.log .m.GET{color:#7EE2B0}.log .m.HOOK{color:#B597FF}.log .m.SKIP,.log .m.c409,.log .m.REPLAY{color:#F2B544}.log .m.c201,.log .m.c200{color:#7EE2B0}.log .m.ERR,.log .m.c4xx{color:#FF6B6B}.log .m.SYS{color:#8FB4FF}
+.log .p{color:#fff;overflow-wrap:anywhere}
+.log .d{color:#95A3C2;grid-column:3;overflow-wrap:anywhere}
+.toasts{position:fixed;top:calc(16px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px));z-index:95;display:flex;flex-direction:column;gap:10px;width:min(360px,calc(100% - 32px));pointer-events:none}
+.toast{pointer-events:auto;display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:start;padding:12px 14px;border-radius:13px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-lg);animation:slidein .35s cubic-bezier(.2,.8,.2,1) both;font-size:13px}
+.toast.out{animation:fade .3s reverse forwards}
+.toast .ic{width:28px;height:28px;border-radius:8px;display:grid;place-items:center}
+.toast .ic svg{width:16px;height:16px}
+.toast b{display:block;font-size:13.5px}
+.toast span{color:var(--muted)}
+
+/* ---------- responsive ---------- */
+/* ---------- Mi wallet y contactos ---------- */
+.req{color:var(--bad);font-weight:700}
+.wid{display:flex;flex-direction:column;gap:6px;padding:16px;border-radius:14px;background:var(--side);color:#fff;position:relative;overflow:hidden;animation:pop .5s ease both}
+.wid::after{content:"";position:absolute;right:-60px;top:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,var(--accent),transparent 65%);opacity:.45}
+.wid .eyebrow{color:#C5D0EC}
+.wid-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:relative;z-index:1}
+.wid-row b{font-size:26px;letter-spacing:.04em}
+.wid-row .btn{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);color:#fff}
+.wid small{color:#C5D0EC;position:relative;z-index:1}
+.pay-state{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:12px;align-items:center;padding:14px 16px;border-radius:12px;margin-top:4px}
+.pay-state svg{width:22px;height:22px}
+.pay-state b{display:block;font-size:14.5px}
+.pay-state span{font-size:13px;opacity:.9}
+.pay-state.ok{background:var(--ok-soft);color:var(--ok)}
+.pay-state.warn{background:var(--warn-soft);color:var(--warn)}
+.pay-state.bad{background:var(--bad-soft);color:var(--bad)}
+.ct-list{display:flex;flex-direction:column;gap:8px}
+.ct-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 12px;border-radius:12px;border:1px solid var(--line)}
+.ct-row b{display:block;font-size:13.5px}
+.ct-row small{color:var(--muted);font-size:12px}
+.ct-row.new{animation:slidein .4s ease both,flash 1.6s ease-out}
+.merch[disabled]{pointer-events:none}
+
+/* ---------- gate: bienvenida / onboarding ---------- */
+.gate{min-height:100vh;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);background:var(--bg)}
+.gate.wide{grid-template-columns:320px minmax(0,1fr)}
+.gate-art{position:relative;overflow:hidden;isolation:isolate;background:var(--side);color:#fff;display:flex;flex-direction:column;gap:30px;padding-block:36px;padding-left:max(40px,env(safe-area-inset-left,0px));padding-right:40px}
+.gate.wide .gate-art{padding-left:max(30px,env(safe-area-inset-left,0px));padding-right:30px;position:sticky;top:0;height:100vh}
+.gate-art::before{content:"";position:absolute;right:-160px;top:-140px;width:460px;height:460px;border-radius:50%;background:radial-gradient(circle at 30% 30%,var(--accent) 0%,transparent 62%);opacity:.5;z-index:-1;animation:float 10s ease-in-out infinite}
+.gate-art::after{content:"";position:absolute;left:-160px;bottom:-180px;width:440px;height:440px;border-radius:50%;background:radial-gradient(circle,#1D4ED8 0%,transparent 65%);opacity:.75;z-index:-1;animation:float 12s ease-in-out infinite reverse}
+.gate-art h1{font-size:clamp(34px,4.2vw,56px);font-weight:800;line-height:1.02;letter-spacing:-.03em;animation:rise .7s .1s cubic-bezier(.2,.8,.2,1) both}
+.gate-art h1 em{font-style:normal;color:var(--accent)}
+.gate-art p{color:#C5D0EC;max-width:44ch;font-size:15.5px;animation:rise .7s .2s cubic-bezier(.2,.8,.2,1) both}
+.feat{display:flex;flex-direction:column;gap:12px}
+.feat div{display:flex;gap:12px;align-items:center;font-size:14px;color:#DDE5F7;animation:rise .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0) * 90ms + 300ms)}
+.feat span{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.08);display:grid;place-items:center;color:var(--accent-2);flex:none;transition:background .3s,color .3s}
+.feat span svg{width:17px;height:17px}
+.feat div.on{color:#fff;font-weight:700}
+.feat div.on span{background:var(--accent);color:#fff;box-shadow:0 0 0 5px rgba(255,106,43,.22)}
+.feat div.done span{background:rgba(61,208,142,.16);color:#3DD08E}
+.floaters{position:relative;height:160px;margin-top:auto}
+.fl{position:absolute;display:flex;gap:10px;align-items:center;padding:10px 14px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-size:13px;animation:bob 6s ease-in-out infinite}
+.fl b{display:block;font-size:13.5px}
+.fl small{color:#C5D0EC;font-size:11.5px}
+.fl i{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:none}
+.fl i svg{width:16px;height:16px}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.gate-main{display:flex;align-items:center;justify-content:center;padding-block:40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));min-width:0}
+.gate.wide .gate-main{align-items:flex-start;padding-left:max(28px,env(safe-area-inset-left,0px));padding-right:max(28px,env(safe-area-inset-right,0px))}
+.auth-card{width:min(440px,100%);display:flex;flex-direction:column;gap:16px;animation:rise .6s .15s cubic-bezier(.2,.8,.2,1) both}
+.auth-card h2{font-size:30px;font-weight:800;margin-top:4px}
+.or{display:flex;align-items:center;gap:12px;color:var(--faint);font-size:12.5px;white-space:nowrap}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.btn.lg{padding:14px 18px;font-size:15px;border-radius:13px}
+.ql-list{display:flex;flex-direction:column;gap:8px}
+.ql{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);text-align:left;width:100%;transition:border-color .2s,transform .15s}
+.ql:hover{border-color:var(--accent);transform:translateX(3px)}
+.ql b{font-size:13.5px;display:block}
+.ql small{font-size:11.5px;color:var(--muted)}
+.auth-msg{display:grid;grid-template-columns:20px minmax(0,1fr);gap:10px;padding:12px 14px;border-radius:12px;font-size:13.5px;animation:rise .35s ease both}
+.auth-msg svg{width:18px;height:18px;margin-top:1px}
+.auth-msg.bad{background:var(--bad-soft);color:var(--bad)}
+.auth-msg.warn{background:var(--warn-soft);color:var(--warn)}
+.auth-msg a{color:inherit;font-weight:700}
+.onb-wrap{width:100%;max-width:1100px}
+.gate-top{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.link-back{display:inline-flex;gap:7px;align-items:center;color:var(--muted);text-decoration:none;font-weight:600;font-size:13.5px;padding:6px 0}
+.link-back:hover{color:var(--fg)}
+.link-back svg{width:16px;height:16px}
+@media (max-width:1280px){.gate.wide .two{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:900px){
+  .gate,.gate.wide{grid-template-columns:minmax(0,1fr)}
+  .gate-art,.gate.wide .gate-art{position:relative;height:auto;padding-block:24px 28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));gap:18px}
+  .gate-art h1{font-size:32px}
+  .floaters,.gate .feat{display:none}
+  .gate-main,.gate.wide .gate-main{padding-block:28px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+}
+
+@media (max-width:1100px){
+  .dash-top,.dash-mid,.dash-bot,.two,.idem-grid,.fault-grid,.hitl-grid,.qr-wrap{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:900px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .side{position:fixed;top:auto;bottom:0;left:0;right:0;height:auto;z-index:50;flex-direction:row;padding:8px max(8px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));gap:0;overflow-x:auto;border-top:1px solid rgba(255,255,255,.08)}
+  .side .brand,.side-foot,.nav-label{display:none}
+  .nav{flex-direction:row;gap:4px}
+  .nav a{flex-direction:column;gap:3px;font-size:10.5px;padding:7px 10px;white-space:nowrap}
+  .nav a .wtag{display:none}
+  .nav a .cnt{position:absolute;top:2px;right:4px;margin:0;min-width:16px;height:16px;font-size:10px}
+  .nav a.on::before{left:12px;right:12px;top:auto;bottom:-8px;width:auto;height:3px;border-radius:3px 3px 0 0}
+  .top{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:150px}
+  .fab{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  .who .txt{display:none}
+  .who{padding:4px}
+}
+@media (max-width:640px){
+  .grid-f,.doc-prev,.read-opts,.sources,.cov{grid-template-columns:minmax(0,1fr)}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fsm{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fsm .col::after{display:none}
+  .stepper span{font-size:11px}
+  .recon-sum{grid-template-columns:minmax(0,1fr);justify-items:center}
+  .sum-l{width:100%}
+  .fab .lbl{display:none}
+  .panel{padding:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<div class="route-bar" id="routeBar"></div>
+<div id="gate" hidden></div>
+<div class="app" id="app" hidden>
+  <aside class="side">
+    <a class="brand" href="#inicio" aria-label="Tu Billetera ALiaDA, inicio">
+      <svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><rect width="38" height="38" rx="11" fill="#12285A"/><circle cx="15" cy="19" r="8" fill="none" stroke="#FFFFFF" stroke-width="3"/><circle cx="23" cy="19" r="8" fill="none" stroke="#FF6A2B" stroke-width="3"/></svg>
+      <span><b>AL<i>ia</i>DA</b><small>Tu billetera aliada</small></span>
+    </a>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-foot"><b>Modo prototipo</b>Proveedores, KYC y adquirente son simulados. Abre la consola de eventos para ver cada request.</div>
+  </aside>
+  <div class="main-wrap">
+    <header class="top">
+      <div class="crumb"><small id="crumbSmall">Tu Billetera ALiaDA</small><strong id="crumbTitle">Inicio</strong></div>
+      <div class="top-actions">
+        <span id="accPill"></span>
+        <button class="icon-btn" id="themeBtn" aria-label="Cambiar tema"></button>
+        <div class="who" id="who"></div>
+        <button class="icon-btn" id="logoutBtn" data-act="logout" aria-label="Cerrar sesión" title="Cerrar sesión"></button>
+      </div>
+    </header>
+    <main id="view" tabindex="-1"></main>
+  </div>
+</div>
+
+<button class="fab" id="fab" aria-label="Abrir consola de eventos"><span id="fabIc"></span><span class="lbl">Eventos</span><span class="n" id="fabN">0</span></button>
+<aside class="console" id="console" aria-label="Consola de eventos">
+  <div class="console-h"><span id="conIc"></span><b>Consola de eventos</b><span class="pill mute" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1);color:#95A3C2">API mock</span><button class="icon-btn" id="conClose" aria-label="Cerrar consola"></button></div>
+  <div class="console-b" data-region="logs"></div>
+</aside>
+<div class="toasts" id="toasts"></div>
+<div class="modal" id="modal" hidden></div>
+
+<script>
+/* =========================================================
+   Utilidades
+   ========================================================= */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const round2=n=>Math.round(n*100)/100;
+const fmt=n=>'S/ '+Number(n).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2});
+const now=()=>Date.now();
+const MIN=6e4,HOUR=36e5,DAY=864e5;
+const rand=(n=6)=>Array.from({length:n},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
+const uuid=()=>(crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&3|8)).toString(16)}));
+const short=k=>k.slice(0,8)+'…'+k.slice(-4);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const hhmm=t=>new Date(t).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+const dshort=t=>new Date(t).toLocaleDateString('es-PE',{day:'numeric',month:'short'})+', '+new Date(t).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit',hour12:false});
+function ago(t){const d=now()-t;if(d<45e3)return'hace un momento';if(d<HOUR)return`hace ${Math.round(d/MIN)} min`;if(d<DAY)return`hace ${Math.round(d/HOUR)} h`;return dshort(t)}
+const initials=n=>n.split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+const AV=['#2B6CB0','#C05621','#2F855A','#6B46C1','#B83280','#2C7A7B','#9C4221','#3949AB'];
+const avColor=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return AV[h%AV.length]};
+
+const IC={
+  home:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  userplus:'<path d="M15 20c0-3-2.7-5.5-6-5.5S3 17 3 20"/><circle cx="9" cy="7.5" r="3.8"/><path d="M19 8v6M16 11h6"/>',
+  send:'<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>',
+  qr:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 17h4v4h-4"/>',
+  key:'<circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3L20 3M16 7l3 3M18 5l2 2"/>',
+  zap:'<path d="M13 2L3 14h9l-1 8 10-12h-9z"/>',
+  scale:'<path d="M12 3v18M5 7h14M8 21h8"/><path d="M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z"/>',
+  headset:'<path d="M3 14v-2a9 9 0 0 1 18 0v2"/><path d="M21 14a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 2zM3 14a2 2 0 0 0 2 2h1v-6H5a2 2 0 0 0-2 2zM18 16v1a4 4 0 0 1-4 4h-2"/>',
+  eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  eyeoff:'<path d="M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6A17 17 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
+  check:'<path d="M20 6L9 17l-5-5"/>',
+  x:'<path d="M18 6L6 18M6 6l12 12"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  alert:'<path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01"/>',
+  refresh:'<path d="M21 12a9 9 0 1 1-2.6-6.4M21 3v6h-6"/>',
+  undo:'<path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/>',
+  terminal:'<path d="M4 17l6-6-6-6M12 19h8"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
+  up:'<path d="M7 17L17 7M8 7h9v9"/>',
+  down:'<path d="M17 7L7 17M16 17H7V8"/>',
+  upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>',
+  camera:'<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
+  copy:'<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+  play:'<path d="M6 4l14 8-14 8z"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
+  shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  face:'<circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/>',
+  id:'<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2.5"/><path d="M14 10h4M14 14h4"/>',
+  gauge:'<path d="M12 14l4-4"/><path d="M3.3 19a10 10 0 1 1 17.4 0"/>',
+  wallet:'<path d="M20 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/><path d="M21 11h-5a2 2 0 0 0 0 4h5z"/>',
+  server:'<rect x="3" y="3" width="18" height="7" rx="2"/><rect x="3" y="14" width="18" height="7" rx="2"/><path d="M7 6.5h.01M7 17.5h.01"/>',
+  book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/>',
+  store:'<path d="M3 9l1.5-5h15L21 9M3 9v11h18V9M3 9h18M9 20v-6h6v6"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  bolt2:'<path d="M4 12h4l3-8 4 16 3-8h2"/>',
+  arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+  logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>'
+};
+const ic=(n,sw=2)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]||''}</svg>`;
+
+/* =========================================================
+   Estado y datos de prueba
+   ========================================================= */
+/* Contactos iniciales de Valeria: cada contacto guarda el wallet_id que le compartieron */
+const CONTACTS=[
+  {id:'c1',name:'Camila Rojas',phone:'987112340',walletId:'WLT-10234',kind:'persona'},
+  {id:'c2',name:'Diego Salazar',phone:'945220781',walletId:'WLT-10377',kind:'persona'},
+  {id:'c3',name:'Mariana Flores',phone:'912873004',walletId:'WLT-10519',kind:'persona'},
+  {id:'c4',name:'Renzo Paredes',phone:'934556120',walletId:'WLT-10642',kind:'persona'},
+  {id:'c5',name:'Bodega Don Lucho',phone:'016284410',walletId:'WLT-20118',kind:'comercio'},
+  {id:'c6',name:'Café Tostado',phone:'014471209',walletId:'WLT-20245',kind:'comercio'},
+  {id:'c7',name:'Comercio Sandbox',phone:'000000000',walletId:'WLT-29999',kind:'comercio'}
+].map(c=>({...c,sub:c.kind==='comercio'?c.walletId:fmtPhone(c.phone)}));
+/* Otras wallets que existen en el sistema (sirven para probar el registro de contactos) */
+const OTHER_WALLETS=[
+  {walletId:'WLT-10871',name:'Rosa Huamán Paz',phone:'976543210'},
+  {walletId:'WLT-11502',name:'Kevin Torres Ríos',phone:'955118722'},
+  {walletId:'WLT-12046',name:'Lucero Vargas Díaz',phone:'938204417'}
+];
+const LOW_LIMIT=500;
+const KYCST={SIN_INICIAR:['mute','Sin verificar'],PENDIENTE:['warn','KYC pendiente'],APROBADO:['ok','KYC aprobado'],RECHAZADO:['bad','KYC rechazado']};
+function fmtPhone(p){return String(p).replace(/(\d{3})(\d{3})(\d{3})/,'$1 $2 $3')}
+const MERCHANTS=[
+  {id:'MCH-1042',name:'Pollería El Leñador',mcc:'5812 · Restaurantes',amount:48.90,city:'Miraflores'},
+  {id:'MCH-2210',name:'Farmacia Salud+',mcc:'5912 · Farmacias',amount:23.50,city:'San Isidro'},
+  {id:'MCH-3307',name:'Taxi Express Lima',mcc:'4121 · Transporte',amount:null,city:'Surco'},
+  {id:'MCH-4119',name:'Librería Andina',mcc:'5942 · Librerías',amount:62.00,city:'Lince'}
+];
+const REJECT_REASONS=['Límite diario de la cuenta excedido','Bloqueo preventivo antifraude','Proveedor sin fondos de liquidación','Destino no habilitado para recibir'];
+
+function makeState(seed){
+  const st={speed:1,accounts:[],contacts:[],cur:null,balance:0,txs:[],idem:new Map(),provider:[],ledger:[],cbSeen:new Set(),
+    faults:{timeout:0,reject:0,pending:0,dup:0},force:null,forceDup:false,forceCharged:null,forceRevFail:false,
+    reversals:[],tickets:[],logs:[],dupIgnored:0,seq:48210,tseq:1031,lastRecon:null,isMain:false};
+  if(seed)seedData(st);
+  return st;
+}
+function seedData(st){
+  /* 1 usuario → 1 wallet. La wallet se genera activa; los pagos se habilitan solo con KYC aprobado. */
+  st.accounts=[
+    {id:'USR-1001',name:'Valeria Quispe Huamán',phone:'987654321',email:'valeria.quispe@correo.pe',pass:'Aliada#2026',created:now()-40*DAY,
+      wallet:{id:'WLT-00418',status:'ACTIVA',created:now()-40*DAY},kyc:{status:'APROBADO',score:92,reason:'KYC aprobado automáticamente',at:now()-40*DAY},balance:1842.50,txs:[]},
+    {id:'USR-1002',name:'Jorge Mamani Ccori',phone:'951003214',email:'jorge.mamani@correo.pe',pass:'Aliada#2026',created:now()-3*HOUR,
+      wallet:{id:'WLT-00427',status:'ACTIVA',created:now()-3*HOUR},kyc:{status:'PENDIENTE',score:61,reason:'Coincidencia biométrica 71%: requiere revisión',ticket:'HITL-1030',at:now()-2*HOUR},balance:150,txs:[]},
+    {id:'USR-1003',name:'Lucía Torres Vega',phone:'990441872',email:'lucia.torres@correo.pe',pass:'Aliada#2026',created:now()-26*HOUR,
+      wallet:{id:'WLT-00431',status:'ACTIVA',created:now()-26*HOUR},kyc:{status:'RECHAZADO',score:18,reason:'El documento no coincide con RENIEC (mock)',at:now()-25*HOUR},balance:150,txs:[]},
+    {id:'USR-1004',name:'Martín Ccahuana Rojas',phone:'944781205',email:'martin.ccahuana@correo.pe',pass:'Aliada#2026',created:now()-20*MIN,
+      wallet:null,kyc:{status:'SIN_INICIAR'},balance:0,txs:[]}
+  ];
+  st.cur='USR-1001';
+  st.balance=1842.50;
+  st.txs=st.accounts[0].txs;
+  st.contacts=CONTACTS.map(c=>({...c,owner:'USR-1001',created:now()-30*DAY}));
+  const C=id=>CONTACTS.find(c=>c.id===id);
+  const M=id=>{const m=MERCHANTS.find(x=>x.id===id);return{id:m.id,name:m.name,sub:m.mcc,kind:'comercio'}};
+  const seed=[
+    {dir:'in',type:'p2p',cp:{name:'Andina Servicios SAC',sub:'Abono de haberes',kind:'comercio'},amount:2450,status:'CONFIRMADA',ago:6*DAY+3*HOUR},
+    {dir:'out',type:'qr',cp:M('MCH-1042'),amount:48.90,status:'CONFIRMADA',ago:5*DAY+5*HOUR},
+    {dir:'out',type:'p2p',cp:C('c1'),amount:120,status:'CONFIRMADA',ago:5*DAY+1*HOUR,note:'Cumpleaños de mamá'},
+    {dir:'out',type:'p2p',cp:C('c4'),amount:64.90,status:'CONFIRMADA',ago:4*DAY+2*HOUR,note:'Entradas',provAmount:69.40},
+    {dir:'out',type:'qr',cp:M('MCH-2210'),amount:23.50,status:'CONFIRMADA',ago:3*DAY+6*HOUR},
+    {dir:'out',type:'p2p',cp:C('c2'),amount:300,status:'RECHAZADA',ago:3*DAY+2*HOUR,reason:'Límite diario de la cuenta excedido'},
+    {dir:'in',type:'p2p',cp:C('c3'),amount:85,status:'CONFIRMADA',ago:2*DAY+7*HOUR,note:'Cuota de la parrilla'},
+    {dir:'out',type:'p2p',cp:C('c5'),amount:37.80,status:'CONFIRMADA',ago:2*DAY+1*HOUR,noLedger:true},
+    {dir:'out',type:'qr',cp:M('MCH-4119'),amount:62,status:'REVERSADA',ago:1*DAY+4*HOUR,reason:'Timeout con cargo en proveedor'},
+    {dir:'out',type:'p2p',cp:C('c6'),amount:15.50,status:'RECHAZADA',ago:1*DAY+1*HOUR,provStatus:'APROBADA',reason:'Timeout de confirmación'},
+    {dir:'in',type:'qr',cp:{name:'Cobro QR · Diego Salazar',sub:'Pago recibido',kind:'persona'},amount:40,status:'CONFIRMADA',ago:7*HOUR},
+    {dir:'out',type:'p2p',cp:C('c3'),amount:22,status:'CONFIRMADA',ago:3*HOUR,note:'Almuerzo'},
+    {dir:'out',type:'qr',cp:M('MCH-3307'),amount:18.50,status:'PENDIENTE',ago:35*MIN}
+  ];
+  for(const s of seed){
+    st.seq++;
+    const t=now()-s.ago;
+    const tx={id:'TX-'+rand(6),ref:'OP-'+st.seq,provRef:'PRV-'+(70000+st.seq%997*23),dir:s.dir,type:s.type,cp:s.cp,amount:s.amount,note:s.note||'',status:s.status,createdAt:t,idemKey:uuid(),reason:s.reason||'',
+      timeline:[{s:'CREADA',t,m:'Intención de pago creada'},{s:'PROCESANDO',t:t+900,m:'Enviado al proveedor (mock)'},{s:s.status,t:t+2100,m:statusMsg(s.status)}]};
+    st.txs.unshift(tx);
+    const pStatus=s.provStatus||({CONFIRMADA:'APROBADA',RECHAZADA:'RECHAZADA',REVERSADA:'REVERSADA',PENDIENTE:'PENDIENTE'}[s.status]);
+    st.provider.push({ref:tx.provRef,amount:s.provAmount||s.amount,status:pStatus,t:t+1800,source:s.type==='qr'?'Acquiring':'Payments',owner:st.cur});
+    if(s.status==='CONFIRMADA'&&!s.noLedger)st.ledger.push({id:'LG-'+rand(5),ref:tx.provRef,amount:s.amount,kind:s.dir==='in'?'CREDITO':'DEBITO',t:t+2200,owner:st.cur});
+    if(s.status==='CONFIRMADA')st.cbSeen.add(tx.provRef+':APROBADA');
+    st.idem.set(tx.idemKey,{key:tx.idemKey,txId:tx.id,state:s.status,hits:1,created:t,last:t,amount:s.amount,http:201});
+  }
+  st.provider.push({ref:'PRV-77120',amount:35,status:'APROBADA',t:now()-9*HOUR,source:'Payments',owner:st.cur});
+  st.reversals.push({id:'RV-8K2QD',txId:st.txs.find(t=>t.status==='REVERSADA').id,ref:st.txs.find(t=>t.status==='REVERSADA').ref,amount:62,reason:'Timeout con cargo en proveedor',status:'COMPLETADO',t:now()-DAY-4*HOUR+4000});
+  st.tickets.push(
+    {id:'HITL-1030',type:'KYC',title:'Revisión KYC · Jorge Mamani Ccori',detail:'Coincidencia biométrica de 71%, por debajo del umbral automático de 85%. Validar selfie contra foto RENIEC.',priority:'Media',status:'ABIERTO',created:now()-2*HOUR,ref:'USR-1002'},
+    {id:'HITL-1031',type:'PAGO',title:'Reclamo · pago duplicado a Café Tostado',detail:'La clienta indica que el proveedor cobró S/ 15.50 aunque la app mostró el pago como rechazado.',priority:'Alta',status:'ABIERTO',created:now()-50*MIN,ref:st.txs.find(t=>t.cp.name==='Café Tostado').ref}
+  );
+  st.logs.push({t:now()-40*MIN,m:'SYS',p:'Sesión iniciada',d:'Wallet WLT-00418 · Valeria Quispe'});
+}
+function statusMsg(s){return{CONFIRMADA:'Proveedor confirmó la operación',RECHAZADA:'Proveedor rechazó la operación',REVERSADA:'Reverso automático completado',PENDIENTE:'Esperando confirmación asíncrona',FALLIDA:'Operación fallida'}[s]||s}
+
+const S=makeState(true);S.isMain=true;
+const curAcc=(st=S)=>st.accounts.find(a=>a.id===st.cur);
+const canPay=(a=curAcc())=>!!(a&&a.wallet&&a.wallet.status==='ACTIVA'&&a.kyc.status==='APROBADO');
+const myContacts=()=>S.contacts.filter(c=>c.owner===S.cur);
+/* Cada usuario ve su propio saldo y movimientos */
+function switchUser(id){
+  const prev=curAcc();if(prev){prev.balance=S.balance;prev.txs=S.txs}
+  S.cur=id;const a=curAcc();S.balance=a.balance;S.txs=a.txs;
+  a.txs.forEach(t=>seenTx?.add?.(t.id));
+}
+function payBlockReason(a=curAcc()){
+  if(!a)return'Inicia sesión para pagar.';
+  if(!a.wallet)return'Aún no tienes wallet. Genérala en "Mi wallet" para empezar.';
+  if(a.kyc.status==='SIN_INICIAR')return'Tu wallet aún no está habilitada para pagos. Verifica tu identidad en "Mi wallet".';
+  if(a.kyc.status==='PENDIENTE')return`Tu verificación de identidad está en revisión${a.kyc.ticket?` (caso ${a.kyc.ticket})`:''}. Te avisaremos por SMS cuando se habiliten los pagos.`;
+  if(a.kyc.status==='RECHAZADO')return'No pudimos verificar tu identidad. Revisa tus datos y vuelve a intentarlo en "Mi wallet".';
+  return'';
+}
+
+/* =========================================================
+   Motor de pagos simulado (W2, W3, W4, W5)
+   ========================================================= */
+const sleep=(st,ms)=>new Promise(r=>setTimeout(r,ms*st.speed));
+function log(st,m,p,d='',lvl=''){st.logs.unshift({t:now(),m,p,d,lvl});if(st.logs.length>250)st.logs.pop();if(st.isMain)bumpFab()}
+function step(st,tx,s,m){tx.status=s;tx.timeline.push({s,t:now(),m});const r=st.idem.get(tx.idemKey);if(r&&r.state!=='EN_CURSO')r.state=s;notify(st)}
+function note(st,tx,m){tx.timeline.push({s:tx.status,t:now(),m});notify(st)}
+function provSet(st,tx,status,amount=tx.amount){const p=st.provider.find(x=>x.ref===tx.provRef);if(p){p.status=status;p.amount=amount;p.t=now()}else st.provider.push({ref:tx.provRef,amount,status,t:now(),source:tx.type==='qr'?'Acquiring':'Payments',owner:tx.owner||st.cur})}
+function ledgerAdd(st,tx){st.ledger.push({id:'LG-'+rand(5),ref:tx.provRef,amount:tx.amount,kind:tx.dir==='in'?'CREDITO':'DEBITO',t:now(),owner:tx.owner||st.cur})}
+function confirmTx(st,tx,m){
+  if(tx.status==='CONFIRMADA')return;
+  st.balance=round2(st.balance+(tx.dir==='in'?tx.amount:-tx.amount));
+  ledgerAdd(st,tx);
+  step(st,tx,'CONFIRMADA',m);
+  log(st,'SYS','ledger.post',`${tx.dir==='in'?'Crédito':'Débito'} ${fmt(tx.amount)} · ${tx.ref}`);
+  if(st.isMain)toast('ok','Pago confirmado',`${tx.ref} · ${fmt(tx.amount)} ${tx.dir==='in'?'de':'a'} ${tx.cp.name}`);
+}
+function newTx(st,{dir='out',type='p2p',cp,amount,note,idemKey}){
+  st.seq++;
+  const t=now();
+  return{owner:st.cur,id:'TX-'+rand(6),ref:'OP-'+st.seq,provRef:'PRV-'+(70000+Math.floor(Math.random()*29999)),dir,type,cp,amount:round2(amount),note:note||'',status:'CREADA',createdAt:t,idemKey,reason:'',timeline:[{s:'CREADA',t,m:'Intención de pago creada'}]};
+}
+function pickOutcome(st){
+  if(st.force){const f=st.force;st.force=null;return f}
+  const f=st.faults,r=Math.random();let a=0;
+  for(const[k,p]of[['timeout',f.timeout],['reject',f.reject],['pending',f.pending]]){a+=p;if(r<a)return k}
+  return'ok';
+}
+function deliverCallback(st,tx,pstatus){
+  const k=tx.provRef+':'+pstatus;
+  log(st,'HOOK','/webhooks/payments',`Callback ${tx.provRef} → ${pstatus}`);
+  if(st.cbSeen.has(k)){
+    st.dupIgnored++;
+    log(st,'SKIP','/webhooks/payments',`Duplicado ignorado: el evento ${k} ya fue procesado`,'warn');
+    note(st,tx,'Callback duplicado recibido e ignorado');
+    if(st.isMain)toast('violet','Callback duplicado ignorado',`${tx.ref}: el saldo no se volvió a mover.`);
+    return false;
+  }
+  st.cbSeen.add(k);
+  if(pstatus==='APROBADA')confirmTx(st,tx,'Callback del proveedor: aprobada');
+  return true;
+}
+async function pay(st,req){
+  const key=req.idemKey||uuid();
+  log(st,'POST','/v1/payments/intents',`Idempotency-Key ${short(key)} · ${fmt(req.amount||0)} → ${req.cp.name}`);
+  const prev=st.idem.get(key);
+  if(prev){
+    prev.hits++;prev.last=now();
+    const tx=st.txs.find(t=>t.id===prev.txId);
+    const http=prev.state==='EN_CURSO'?409:200;
+    log(st,'c'+http,'/v1/payments/intents',http===409?`Key ${short(key)} sigue en curso: se rechaza la petición concurrente`:`Replay: se devuelve ${tx.ref} guardada en el store, sin crear operación`,'warn');
+    notify(st);
+    return{replayed:true,http,tx};
+  }
+  const acc=curAcc(st);
+  if(!canPay(acc)){log(st,'c4xx','/v1/payments/intents','403 · wallet no habilitada para pagos');throw new Error(payBlockReason(acc))}
+  if(req.amount>LOW_LIMIT){log(st,'c4xx','/v1/payments/intents','422 · supera el tope de bajo monto');throw new Error(`Los pagos de bajo monto tienen un tope de ${fmt(LOW_LIMIT)} por operación.`)}
+  if(!(req.amount>0)){log(st,'c4xx','/v1/payments/intents','422 · monto inválido');throw new Error('Ingresa un monto mayor a S/ 0.00.')}
+  if(req.amount>st.balance){log(st,'c4xx','/v1/payments/intents','422 · saldo insuficiente');throw new Error(`Saldo insuficiente: tu saldo es ${fmt(st.balance)}.`)}
+  const tx=newTx(st,{...req,idemKey:key});
+  st.txs.unshift(tx);req.onCreate?.(tx);
+  st.idem.set(key,{key,txId:tx.id,state:'EN_CURSO',hits:1,created:now(),last:now(),amount:tx.amount,http:202});
+  log(st,'c201','/v1/payments/intents',`${tx.ref} creada · estado CREADA`);
+  notify(st);
+  await sleep(st,650);
+  step(st,tx,'PROCESANDO',req.type==='qr'?'Autorizando con el adquirente (Acquiring mock)':'Enviado al proveedor de pagos (mock)');
+  log(st,'POST',req.type==='qr'?'acquirer/authorize':'provider/charge',`${tx.provRef} · ${fmt(tx.amount)}`);
+  const out=pickOutcome(st);
+  await sleep(st,out==='timeout'?1700:950);
+  await resolveOutcome(st,tx,out);
+  const rec=st.idem.get(key);rec.state=tx.status;rec.http=201;
+  notify(st);
+  return{replayed:false,http:201,tx,outcome:out};
+}
+async function resolveOutcome(st,tx,out){
+  const dup=st.forceDup||Math.random()<st.faults.dup;st.forceDup=false;
+  if(out==='ok'){
+    if(tx.type==='qr'){note(st,tx,'Comercio validado y autorizado por el adquirente');}
+    provSet(st,tx,'APROBADA');
+    deliverCallback(st,tx,'APROBADA');
+    if(dup){await sleep(st,350);deliverCallback(st,tx,'APROBADA')}
+  }else if(out==='reject'){
+    tx.reason=pick(REJECT_REASONS);
+    provSet(st,tx,'RECHAZADA');
+    step(st,tx,'RECHAZADA',`Rechazo del proveedor: ${tx.reason}`);
+    log(st,'c4xx','provider/charge',`402 · ${tx.reason}`,'bad');
+    if(st.isMain)toast('bad','Pago rechazado',`${tx.ref}: ${tx.reason}. No se descontó saldo.`);
+  }else if(out==='pending'){
+    provSet(st,tx,'PENDIENTE');
+    step(st,tx,'PENDIENTE','Proveedor respondió 202: confirmará por callback');
+    log(st,'c200','provider/charge','202 Accepted · confirmación asíncrona');
+    if(st.isMain)toast('warn','Pago pendiente',`${tx.ref} se confirmará cuando llegue el callback del proveedor.`);
+    setTimeout(()=>{
+      if(tx.status!=='PENDIENTE')return;
+      provSet(st,tx,'APROBADA');
+      deliverCallback(st,tx,'APROBADA');
+      const r=st.idem.get(tx.idemKey);if(r)r.state=tx.status;
+      if(dup)setTimeout(()=>deliverCallback(st,tx,'APROBADA'),600*st.speed);
+    },4500*st.speed);
+  }else if(out==='timeout'){
+    step(st,tx,'TIMEOUT','Sin respuesta del proveedor en 8 s');
+    log(st,'ERR','provider/charge','Timeout de 8000 ms','bad');
+    await sleep(st,800);
+    log(st,'GET',`/v1/provider/payments/${tx.provRef}`,'Consulta de estado tras timeout');
+    const charged=st.forceCharged??(Math.random()<0.6);st.forceCharged=null;
+    if(charged){
+      provSet(st,tx,'APROBADA');
+      note(st,tx,'Consulta de estado: el proveedor sí registró el cargo');
+      await sleep(st,800);
+      const ok=!st.forceRevFail&&Math.random()>0.2;st.forceRevFail=false;
+      const rv={id:'RV-'+rand(5),txId:tx.id,ref:tx.ref,amount:tx.amount,reason:'Timeout con cargo en proveedor',status:ok?'COMPLETADO':'FALLIDO',t:now()};
+      st.reversals.unshift(rv);
+      log(st,'POST','/v1/reversals',`${rv.id} · ${tx.provRef} · ${fmt(tx.amount)} → ${rv.status}`,ok?'':'bad');
+      if(ok){provSet(st,tx,'REVERSADA');tx.reason='Timeout con cargo en proveedor';step(st,tx,'REVERSADA','Reverso automático completado');if(st.isMain)toast('info','Reverso completado',`${tx.ref}: el proveedor devolvió ${fmt(tx.amount)}.`)}
+      else{tx.reason='Reverso automático fallido';step(st,tx,'FALLIDA','El reverso automático falló: se escala a soporte');
+        createTicket(st,{type:'REVERSO',title:`Reverso fallido · ${tx.ref}`,detail:`Timeout con cargo confirmado en el proveedor (${tx.provRef}) y el reverso ${rv.id} falló. Ejecutar reverso manual o confirmar el pago.`,priority:'Alta',ref:tx.ref});}
+    }else{tx.reason='Proveedor no registró el cargo';step(st,tx,'FALLIDA','El proveedor no registró el cargo: no hace falta reverso');if(st.isMain)toast('bad','Pago fallido',`${tx.ref}: timeout sin cargo. No se descontó saldo.`)}
+  }
+}
+async function receive(st,{amount,from,concept}){
+  const tx=newTx(st,{dir:'in',type:'qr',cp:{name:from,sub:concept||'Cobro con QR',kind:'persona'},amount,idemKey:uuid()});
+  st.txs.unshift(tx);st.idem.set(tx.idemKey,{key:tx.idemKey,txId:tx.id,state:'EN_CURSO',hits:1,created:now(),last:now(),amount,http:202});
+  log(st,'HOOK','/webhooks/acquirer',`Abono entrante ${fmt(amount)} · ${from}`);notify(st);
+  await sleep(st,700);step(st,tx,'PROCESANDO','Adquirente notificó el pago del QR');
+  await sleep(st,900);provSet(st,tx,'APROBADA');st.cbSeen.add(tx.provRef+':APROBADA');confirmTx(st,tx,'Abono acreditado en la billetera');
+  st.idem.get(tx.idemKey).state='CONFIRMADA';notify(st);return tx;
+}
+function createTicket(st,t){
+  st.tseq++;
+  const tk={id:'HITL-'+st.tseq,status:'ABIERTO',created:now(),...t};
+  st.tickets.unshift(tk);
+  log(st,'SYS','hitl.create',`${tk.id} · ${tk.title}`);
+  if(st.isMain)toast('violet','Escalado a soporte humano',`${tk.id}: ${tk.title}`);
+  notify(st);return tk;
+}
+
+/* =========================================================
+   Conciliación (W6)
+   ========================================================= */
+const W2P={CONFIRMADA:'APROBADA',RECHAZADA:'RECHAZADA',PENDIENTE:'PENDIENTE',REVERSADA:'REVERSADA'};
+const myProvider=(st=S)=>st.provider.filter(p=>!p.owner||p.owner===st.cur);
+const myLedger=(st=S)=>st.ledger.filter(l=>!l.owner||l.owner===st.cur);
+function reconcile(st){
+  const prov=myProvider(st),ledg=myLedger(st);
+  const refs=new Set([...st.txs.filter(t=>t.status!=='CREADA'&&t.status!=='PROCESANDO').map(t=>t.provRef),...prov.map(p=>p.ref),...ledg.map(l=>l.ref)]);
+  const rows=[];
+  for(const ref of refs){
+    const w=st.txs.find(t=>t.provRef===ref),p=prov.find(x=>x.ref===ref),l=ledg.filter(x=>x.ref===ref);
+    const lAmt=l.length?round2(l.reduce((a,x)=>a+x.amount,0)):null;
+    let res='ok',label='Conciliado',action=null;
+    if(!w&&!p){res='bad';label='Asiento sin operación';action='hitl'}
+    else if(!w&&p){res='bad';label='Falta en Wallet';action='hitl'}
+    else if(w&&!p){if(w.status==='FALLIDA'){res='ok';label='Conciliado'}else{res='bad';label='Falta en proveedor';action='hitl'}}
+    else if(w.status==='PENDIENTE'||w.status==='TIMEOUT'){res='warn';label='En tránsito'}
+    else if(W2P[w.status]!==p.status){res='bad';label='Estado distinto';action='hitl'}
+    else if(w.status==='CONFIRMADA'&&p.amount!==w.amount){res='bad';label='Diferencia de monto';action='adjust'}
+    else if(w.status==='CONFIRMADA'&&lAmt===null){res='bad';label='Falta en ledger';action='ledger'}
+    else if(w.status!=='CONFIRMADA'&&lAmt!==null){res='bad';label='Asiento sin operación';action='hitl'}
+    rows.push({ref,w,p,l:lAmt,res,label,action,op:w?w.ref:'—'});
+  }
+  const ord={bad:0,warn:1,ok:2};
+  rows.sort((a,b)=>ord[a.res]-ord[b.res]||((b.w?.createdAt||b.p?.t||0)-(a.w?.createdAt||a.p?.t||0)));
+  return rows;
+}
+
+/* =========================================================
+   Estado de UI
+   ========================================================= */
+const ui={
+  route:'ingresar',hideBal:false,authed:false,
+  login:{user:'valeria.quispe@correo.pe',pass:'Aliada#2026'},
+  act:{busyWallet:false,running:false,scenario:'auto',kyc:[],doc:false,selfie:false,retry:false,d:{dni:'',birth:''}},
+  ct:{d:{name:'',phone:'',walletId:''},busy:false,lastAdded:null},
+  hist:{filter:'todos',q:''},
+  w2:{cp:'c1',amount:'25.00',note:'Taxi del viernes',q:'',tx:null,busy:false},
+  w3:{tab:'cobrar',genAmount:'15.00',genConcept:'Venta de queques',decoded:null,payAmount:'',tx:null,busy:false,scanning:false,qrSeed:'init'},
+  w4:{key:uuid(),amount:'12.50',responses:[],tests:null,lastTx:null,busy:false},
+  w5:{lastTx:null,burst:null,busy:false},
+  w6:{rows:null,running:false,progress:0,resolved:{}},
+  hitl:{filter:'ABIERTO',sel:'HITL-1030'},
+  onb:{apiTab:'ui',busy:false,result:null,idem:uuid(),touched:{},
+    d:{name:'Andrea Céspedes Ruiz',email:'andrea.cespedes@correo.pe',phone:'912345678',pass:'Aliada#2026',terms:true}}
+};
+
+/* =========================================================
+   Regiones reactivas
+   ========================================================= */
+let raf=0;
+function notify(st=S){if(st!==S)return;if(raf)return;raf=requestAnimationFrame(()=>{raf=0;updateRegions();updateChrome()})}
+const countPrev={};
+function runCounts(){
+  $$('[data-count]:not([data-done])').forEach(el=>{
+    el.dataset.done='1';
+    const key=el.dataset.ckey,to=parseFloat(el.dataset.count),kind=el.dataset.fmt||'money';
+    const from=countPrev[key]??0;countPrev[key]=to;
+    const f=v=>kind==='money'?fmt(v):kind==='pct'?Math.round(v)+'%':Math.round(v).toString();
+    if(reduceMotion||from===to){el.textContent=f(to);return}
+    const t0=performance.now(),dur=900;
+    const tick=t=>{const k=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-k,3);el.textContent=f(from+(to-from)*e);if(k<1)requestAnimationFrame(tick)};
+    requestAnimationFrame(tick);
+  });
+}
+function updateRegions(root=document){
+  $$('[data-region]',root).forEach(el=>{
+    const f=R[el.dataset.region];if(!f)return;
+    const html=f(el);
+    if(el._h!==html){el.innerHTML=html;el._h=html}
+  });
+  runCounts();
+}
+
+const ST={CREADA:['info','Creada'],PROCESANDO:['info live','Procesando'],CONFIRMADA:['ok','Confirmada'],PENDIENTE:['warn live','Pendiente'],RECHAZADA:['bad','Rechazada'],TIMEOUT:['warn live','Timeout'],REVERSADA:['violet','Reversada'],FALLIDA:['bad','Fallida']};
+const pill=s=>{const[c,l]=ST[s]||['mute',s];return`<span class="pill ${c}">${l}</span>`};
+const kycPill=s=>{const[c,l]=KYCST[s]||KYCST.SIN_INICIAR;return`<span class="pill ${c}">${l}</span>`};
+const payPill=a=>!a.wallet?'<span class="pill mute">Sin wallet</span>':canPay(a)?'<span class="pill ok">Pagos habilitados</span>':'<span class="pill warn">Pagos no habilitados</span>';
+const tlColor=s=>({CONFIRMADA:'ok',RECHAZADA:'bad',FALLIDA:'bad',PENDIENTE:'warn',TIMEOUT:'warn',REVERSADA:'violet',PROCESANDO:'info',CREADA:'info'}[s]||'');
+const isVoid=s=>['RECHAZADA','FALLIDA','REVERSADA'].includes(s);
+const seenTx=new Set(S.txs.map(t=>t.id));
+function txRow(t){
+  const fresh=!seenTx.has(t.id);if(fresh)setTimeout(()=>seenTx.add(t.id),1600);
+  const sign=t.dir==='in'?'+ ':'− ';
+  return`<button class="tx${fresh?' new':''}" data-act="receipt" data-id="${t.id}">
+    <span class="avatar ${t.cp.kind==='comercio'?'sq':''}" style="background:${avColor(t.cp.name)}">${t.type==='qr'&&t.cp.kind==='comercio'?ic('store'):initials(t.cp.name)}</span>
+    <span class="who2"><b>${esc(t.cp.name)}</b><small>${t.type==='qr'?'QR':'Contacto'} · ${ago(t.createdAt)}${t.note?' · '+esc(t.note):''}</small></span>
+    <span class="amt"><b class="${t.dir==='in'?'in':''} ${isVoid(t.status)?'void':''}">${sign}${fmt(t.amount)}</b>${t.status==='CONFIRMADA'?'':pill(t.status)}</span></button>`;
+}
+function spark(vals,color,w=84,h=30){
+  const mx=Math.max(...vals),mn=Math.min(...vals),rg=mx-mn||1;
+  const pts=vals.map((v,i)=>[i*(w-4)/(vals.length-1)+2,h-3-(v-mn)/rg*(h-8)]);
+  const d=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const last=pts[pts.length-1];
+  return`<svg class="spark" viewBox="0 0 ${w} ${h}" aria-hidden="true"><path d="${d} L${last[0]} ${h} L2 ${h}Z" fill="${color}" opacity=".12"/><path d="${d}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${last[0]}" cy="${last[1]}" r="2.6" fill="${color}"/></svg>`;
+}
+function tracker(tx){
+  if(!tx)return'';
+  const s=tx.status,fin=['CONFIRMADA','RECHAZADA','FALLIDA','REVERSADA'].includes(s);
+  const finCls=s==='CONFIRMADA'?'done':['RECHAZADA','FALLIDA'].includes(s)?'done bad':s==='REVERSADA'?'done warn':['PENDIENTE','TIMEOUT'].includes(s)?'now warn':'';
+  const third=['PENDIENTE','TIMEOUT','CONFIRMADA','RECHAZADA','FALLIDA','REVERSADA'].includes(s)?ST[s][1]:'Resultado';
+  return`<div class="tracker">
+    <div class="panel-h" style="margin-bottom:12px"><h3 style="font-size:15px">${tx.ref}</h3><span class="mono muted">${tx.provRef}</span><div class="end">${pill(s)}</div></div>
+    <div class="trk-steps">
+      <div class="done"><i></i>Creada</div>
+      <div class="${s==='CREADA'?'now':'done'}"><i></i>Procesando</div>
+      <div class="${s==='PROCESANDO'?'now':finCls}"><i></i>${third}</div>
+    </div>
+    <div class="tl">${tx.timeline.map(e=>`<div class="tl-i"><i class="${tlColor(e.s)}"></i><span>${esc(e.m)}</span><time>${hhmm(e.t)}</time></div>`).join('')}</div>
+    ${fin||s==='PENDIENTE'?`<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="btn soft sm" data-act="receipt" data-id="${tx.id}">${ic('book')}Ver comprobante</button>${['FALLIDA','RECHAZADA'].includes(s)?`<button class="btn ghost sm" data-act="escalate" data-id="${tx.id}">${ic('headset')}Escalar a soporte</button>`:''}</div>`:''}
+  </div>`;
+}
+const findTx=id=>S.txs.find(t=>t.id===id);
+function kyCheckIcon(st){return st==='run'?'<span class="spinner"></span>':st==='ok'?ic('check',2.6):st==='warn'?ic('alert'):st==='bad'?ic('x',2.6):''}
+
+const R={
+  logs:()=>S.logs.length?S.logs.map(l=>`<div class="log"><time>${hhmm(l.t)}</time><span class="m ${l.m}">${l.m.replace(/^c/,'')}</span><span class="p">${esc(l.p)}</span>${l.d?`<span class="d">${esc(l.d)}</span>`:''}</div>`).join(''):'<div class="muted" style="padding:20px">Sin eventos todavía.</div>',
+  balance:()=>ui.hideBal?'S/ ••••••':`<span data-count="${S.balance}" data-ckey="bal">${fmt(S.balance)}</span>`,
+  kpis:()=>{
+    const today=S.txs.filter(t=>now()-t.createdAt<DAY);
+    const fin=S.txs.filter(t=>['CONFIRMADA','RECHAZADA','FALLIDA','REVERSADA'].includes(t.status));
+    const okR=fin.length?S.txs.filter(t=>t.status==='CONFIRMADA').length/fin.length*100:0;
+    const pend=S.txs.filter(t=>['PENDIENTE','TIMEOUT','PROCESANDO'].includes(t.status)).length;
+    const rows=reconcile(S),diffs=rows.filter(r=>r.res==='bad').length;
+    const open=S.tickets.filter(t=>t.status==='ABIERTO').length;
+    return[
+      ['Operaciones 24 h',today.length,'int','var(--brand-2)',`${fmt(today.filter(t=>t.status==='CONFIRMADA'&&t.dir==='out').reduce((a,t)=>a+t.amount,0))} pagados`,[3,5,4,7,6,8,today.length]],
+      ['Tasa de éxito',okR,'pct','var(--ok)',`${fin.length} operaciones finalizadas`,[82,85,79,88,84,86,okR]],
+      ['En tránsito',pend,'int','var(--warn)','Pendientes o en timeout',[1,0,2,1,1,0,pend]],
+      ['Diferencias',diffs,'int','var(--bad)',`${open} casos abiertos en soporte`,[2,3,3,4,3,4,diffs]]
+    ].map(([k,v,f,c,d,sp],i)=>`<div class="kpi r" style="--i:${i+1}"><span class="k"><i style="background:${c}"></i>${k}</span><span class="v num" data-count="${v}" data-ckey="kpi${i}" data-fmt="${f}">${f==='pct'?Math.round(v)+'%':v}</span><span class="d">${d}</span>${spark(sp,c)}</div>`).join('');
+  },
+  chart:()=>{
+    const days=[];const base=new Date();base.setHours(0,0,0,0);
+    for(let i=6;i>=0;i--){const d=new Date(base.getTime()-i*DAY);days.push({d,in:0,out:0})}
+    for(const t of S.txs){if(t.status!=='CONFIRMADA')continue;const dd=new Date(t.createdAt);dd.setHours(0,0,0,0);const slot=days.find(x=>x.d.getTime()===dd.getTime());if(slot)slot[t.dir]+=t.amount}
+    const W=600,Hh=220,pl=46,pb=26,pt=10,iw=W-pl-10,ih=Hh-pb-pt;
+    const mxRaw=Math.max(100,...days.map(d=>Math.max(d.in,d.out)));
+    const stepV=[100,250,500,1000,2500,5000].find(s=>mxRaw/s<=4)||10000;const mx=Math.ceil(mxRaw/stepV)*stepV;
+    const y=v=>pt+ih-(v/mx)*ih;const gw=iw/7,bw=Math.min(18,gw/3.2);
+    let g='';for(let v=0;v<=mx;v+=stepV)g+=`<line class="gl" x1="${pl}" x2="${W-10}" y1="${y(v)}" y2="${y(v)}"/><text class="ax" x="${pl-8}" y="${y(v)+4}" text-anchor="end">${v>=1000?(v/1000)+'k':v}</text>`;
+    const bars=days.map((d,i)=>{const cx=pl+gw*i+gw/2;const lbl=d.d.toLocaleDateString('es-PE',{weekday:'short',day:'numeric'});
+      return`<rect class="bar bin" style="animation-delay:${i*60}ms" x="${cx-bw-2}" y="${y(d.in)}" width="${bw}" height="${Math.max(0,ih+pt-y(d.in))}" rx="4"><title>${lbl} · Ingresos ${fmt(d.in)}</title></rect>
+      <rect class="bar bout" style="animation-delay:${i*60+30}ms" x="${cx+2}" y="${y(d.out)}" width="${bw}" height="${Math.max(0,ih+pt-y(d.out))}" rx="4"><title>${lbl} · Pagos ${fmt(d.out)}</title></rect>
+      <text class="ax" x="${cx}" y="${Hh-6}" text-anchor="middle">${lbl}</text>`}).join('');
+    return`<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="Ingresos y pagos confirmados de los últimos 7 días">${g}${bars}</svg>`;
+  },
+  health:()=>{
+    const f=S.faults;
+    const rows=[
+      ['Payments provider','Pagos a contacto',120+f.timeout*900+f.pending*200,f.timeout>.25||f.reject>.35,[110,130,118,125,140,122,120+f.timeout*900]],
+      ['Acquiring QR','Pagos con QR',95+f.timeout*700,f.timeout>.3,[90,92,99,88,101,94,95+f.timeout*700]],
+      ['KYC / RENIEC','Validación de identidad',340,false,[320,360,330,345,338,352,340]],
+      ['Ledger local','Asientos contables',8,false,[7,9,8,8,10,7,8]]
+    ];
+    return`<div class="svc">${rows.map(([n,s,l,deg,sp])=>`<div class="svc-row"><span><b>${n}</b><small>${s} · <span class="num">${Math.round(l)} ms</span></small></span>${deg?'<span class="pill warn">Degradado</span>':'<span class="pill ok">Operativo</span>'}${spark(sp,deg?'var(--warn)':'var(--ok)',74,26)}</div>`).join('')}</div>`;
+  },
+  recent:()=>`<div class="tx-list">${S.txs.slice(0,6).map(txRow).join('')}</div>`,
+  coverage:()=>{
+    const a=curAcc();
+    const items=[['activacion','w1','Registro y activación',a.wallet?(canPay(a)?'Wallet habilitada para pagos':'Wallet generada · falta KYC aprobado'):'Genera tu wallet y verifica tu identidad',`${S.accounts.length} usuarios · ${myContacts().length} contactos`],['contacto','w2','Pago a contacto','Intención, comprobante e historial',`${S.txs.filter(t=>t.type==='p2p').length} registros`],['qr','w3','Pago QR comercio','Generar, leer y pagar con QR',`${S.txs.filter(t=>t.type==='qr').length} registros`],['idempotencia','w4','Idempotencia','Keys, replays y callbacks duplicados',`${S.idem.size} registros`],['fallas','w5','Fallas y reversos','Fault injection, reversos y HITL',`${S.reversals.length} registros`],['conciliacion','w6','Conciliación','Wallet · proveedor · ledger',`${myProvider().length} registros`]];
+    return items.map(([r,w,t,s,n],i)=>`<a href="#${r}" class="r" style="--i:${i}"><span style="display:flex;gap:8px;align-items:center"><span class="tag ${w}">${w.toUpperCase()}</span><b>${t}</b></span><small>${s}</small><small class="mono">${n}</small></a>`).join('');
+  },
+  accPill:()=>{const a=curAcc();return a?payPill(a):''},
+  banner:()=>{const a=curAcc();if(!a||canPay(a))return'';const cls=a.kyc.status==='PENDIENTE'?'warn':a.kyc.status==='RECHAZADO'?'bad':'warn';
+    const cta=a.kyc.status==='PENDIENTE'?'':`<a class="btn ghost sm" href="#activacion">${!a.wallet?'Generar mi wallet':a.kyc.status==='RECHAZADO'?'Reintentar verificación':'Verificar identidad'}</a>`;
+    return`<div class="banner ${cls}">${ic('alert')}<span><b>Pagos no habilitados.</b> ${esc(payBlockReason(a))}</span>${cta}</div>`},
+  /* registro */
+  onbApi:()=>{
+    const d=ui.onb.d,res=ui.onb.result;
+    const req=`<span class="m">POST</span> /v1/users
+<span class="k">Content-Type</span>: application/json
+
+{
+  <span class="k">"name"</span>: <span class="s">"${esc(d.name)}"</span>,
+  <span class="k">"email"</span>: <span class="s">"${esc(d.email)}"</span>,
+  <span class="k">"phone"</span>: <span class="s">"+51${esc(d.phone)}"</span>,
+  <span class="k">"password"</span>: <span class="s">"••••••••"</span>
+}`;
+    const resp=res?`<span class="n">201 Created</span>
+
+{
+  <span class="k">"userId"</span>: <span class="s">"${res.id}"</span>,
+  <span class="k">"name"</span>: <span class="s">"${esc(res.name)}"</span>,
+  <span class="k">"email"</span>: <span class="s">"${esc(res.email)}"</span>,
+  <span class="k">"walletId"</span>: <span class="n">null</span>,
+  <span class="k">"kycStatus"</span>: <span class="s">"NOT_STARTED"</span>
+}
+<span class="c">// La contraseña se guarda solo como hash (bcrypt/argon2)</span>`:`<span class="c">// La respuesta aparece al crear la cuenta</span>`;
+    return`<div class="eyebrow" style="margin-bottom:8px">Request</div><pre class="code">${req}</pre><div class="eyebrow" style="margin:14px 0 8px">Response</div><pre class="code">${resp}</pre>`;
+  },
+  quickLogin:()=>S.accounts.map(a=>`<button class="ql" data-act="loginAs" data-id="${a.id}"><span class="avatar" style="background:${avColor(a.name)}">${initials(a.name)}</span><span style="min-width:0"><b>${esc(a.name)}</b><small class="mono">${esc(a.email)}</small></span>${a.wallet?kycPill(a.kyc.status):'<span class="pill mute">Sin wallet</span>'}</button>`).join(''),
+  onbSteps:()=>{const done=!!ui.onb.result;return['Crea tu cuenta','Genera tu wallet','Verifica tu identidad','Registra tus contactos'].map((t,i)=>`<div class="${i===0&&done?'done':i===0?'on':''}" style="--i:${i}"><span class="mono">${i===0&&done?ic('check',3):i+1}</span>${t}</div>`).join('')},
+  /* Mi wallet (activación) */
+  actSteps:()=>{const a=curAcc();const st=[['Cuenta creada',true,false],['Wallet generada',!!a.wallet,!a.wallet],['Identidad verificada',a.kyc.status==='APROBADO',!!a.wallet&&a.kyc.status!=='APROBADO']];
+    return st.map(([l,d,on])=>`<div class="stp ${d?'done':on?'on':''}"><div class="bar"><i></i></div><span>${d?ic('check',3).replace('<svg','<svg width="13" height="13"'):''}${l}</span></div>`).join('')+`<div class="stp ${canPay(a)?'done':''}"><div class="bar"><i></i></div><span>${canPay(a)?ic('check',3).replace('<svg','<svg width="13" height="13"'):''}Pagos habilitados</span></div>`},
+  walletCard:()=>{const a=curAcc();
+    if(!a.wallet)return`<div class="panel-h"><span class="tag w1">1</span><h3>Genera tu wallet</h3></div>
+      <p class="muted" style="margin-bottom:14px">Tu wallet es tu cuenta para enviar y recibir dinero. Se crea al instante con un identificador único (wallet_id) que solo es tuyo. No necesitas verificar tu identidad para generarla, pero sí para pagar.</p>
+      <button class="btn primary lg" data-act="genWallet" ${ui.act.busyWallet?'disabled':''}>${ui.act.busyWallet?'<span class="spinner"></span>Generando tu wallet…':ic('wallet')+'Generar mi wallet'}</button>`;
+    return`<div class="panel-h"><span class="tag w1">1</span><h3>Tu wallet</h3><div class="end"><span class="pill ok">Activa</span></div></div>
+      <div class="wid"><span class="eyebrow">wallet_id</span><div class="wid-row"><b class="mono">${a.wallet.id}</b><button class="btn ghost sm" data-act="copyRef" data-v="${a.wallet.id}">${ic('copy')}Copiar</button></div><small>Compártelo con tus contactos para que puedan enviarte dinero.</small></div>
+      <dl class="kv" style="margin-top:14px"><dt>Titular</dt><dd>${esc(a.name)}</dd><dt>Generada</dt><dd>${dshort(a.wallet.created)}</dd><dt>Saldo</dt><dd class="num">${fmt(S.balance)}</dd></dl>`},
+  payState:()=>{const a=curAcc();
+    if(canPay(a))return`<div class="pay-state ok">${ic('check',2.4)}<div><b>Habilitada para pagos de bajo monto</b><span>Hasta ${fmt(LOW_LIMIT)} por operación a tus contactos y comercios.</span></div><a class="btn primary sm" href="#contacto">${ic('send')}Pagar</a></div>`;
+    return`<div class="pay-state ${a.kyc.status==='RECHAZADO'?'bad':'warn'}">${ic(a.kyc.status==='PENDIENTE'?'clock':'alert')}<div><b>No habilitada para pagos</b><span>${esc(payBlockReason(a))}</span></div></div>`},
+  kycCard:()=>{const a=curAcc();const k=a.kyc;
+    if(k.status==='APROBADO')return`<div class="panel-h"><span class="tag w1">2</span><h3>Identidad verificada</h3><div class="end">${kycPill(k.status)}</div></div><p class="muted">Score ${k.score} / 100 · ${esc(k.reason||'')}${k.at?' · '+dshort(k.at):''}</p>`;
+    if(k.status==='PENDIENTE'&&!ui.act.running)return`<div class="panel-h"><span class="tag w1">2</span><h3>Verificación en revisión</h3><div class="end">${kycPill(k.status)}</div></div><p class="muted">${esc(k.reason||'')}. Un analista revisa tu caso${k.ticket?` <b class="mono">${k.ticket}</b>`:''} y responde en menos de 24 horas.</p>${ui.act.kyc.length?'<div class="kyc-list" style="margin-top:14px" data-region="kyc"></div>':''}`;
+    return'';
+  },
+  kyc:()=>ui.act.kyc.map(k=>`<div class="kyc-item ${k.st}"><span class="ic">${k.st==='idle'?ic(k.icon):kyCheckIcon(k.st)}</span><span><b>${k.t}</b><small>${esc(k.msg)}</small></span>${k.st==='ok'?'<span class="pill ok">OK</span>':k.st==='warn'?'<span class="pill warn">Revisar</span>':k.st==='bad'?'<span class="pill bad">Falla</span>':k.st==='run'?'<span class="pill info live">Validando</span>':'<span class="pill mute">En cola</span>'}</div>`).join(''),
+  ctMini:()=>{const n=myContacts().length;return`<div class="panel-h"><span class="tag w1">3</span><h3>Tus contactos</h3><div class="end"><span class="pill mute">${n} registrados</span></div></div><p class="muted" style="margin-bottom:12px">Registra a las personas a quienes les pagas con su nombre, celular y el wallet_id que te compartan.</p><a class="btn ghost" href="#contactos">${ic('userplus')}Registrar contactos</a>`},
+  /* Contactos */
+  contactList:()=>{const list=myContacts().slice().sort((a,b)=>b.created-a.created);
+    return list.length?`<div class="ct-list">${list.map(c=>`<div class="ct-row ${c.id===ui.ct.lastAdded?'new':''}"><span class="avatar ${c.kind==='comercio'?'sq':''}" style="background:${avColor(c.name)}">${c.kind==='comercio'?ic('store'):initials(c.name)}</span><span style="min-width:0"><b>${esc(c.name)}</b><small class="mono">${fmtPhone(c.phone)} · ${c.walletId}</small></span><a class="btn ghost sm" href="#contacto" data-paycp="${c.id}">${ic('send')}Pagar</a></div>`).join('')}</div>`:'<div class="empty">Aún no tienes contactos. Registra el primero con su nombre, celular y wallet_id.</div>'},
+  walletDir:()=>{const mine=new Set(myContacts().map(c=>c.walletId));const own=curAcc().wallet?.id;
+    const list=[...OTHER_WALLETS,...S.accounts.filter(a=>a.wallet&&a.id!==S.cur).map(a=>({walletId:a.wallet.id,name:a.name,phone:a.phone}))].filter(w=>w.walletId!==own);
+    return list.map(w=>`<button class="merch" data-act="fillCt" data-w="${w.walletId}" data-n="${esc(w.name)}" data-p="${w.phone}" ${mine.has(w.walletId)?'disabled style="opacity:.5"':''}><span class="avatar" style="background:${avColor(w.name)}">${initials(w.name)}</span><span style="min-width:0"><b>${esc(w.name)}</b><small class="mono">${w.walletId}${mine.has(w.walletId)?' · ya es contacto':''}</small></span></button>`).join('')},
+  /* W2 */
+  contacts:()=>{const q=ui.w2.q.toLowerCase();const all=myContacts();if(!all.length)return`<div class="empty" style="grid-column:1/-1">Aún no tienes contactos. <a href="#contactos">Registra tu primer contacto</a> para pagarle.</div>`;
+    const list=all.filter(c=>!q||c.name.toLowerCase().includes(q)||c.phone.includes(q)||c.walletId.toLowerCase().includes(q));
+    return list.length?list.map(c=>`<button class="ct ${ui.w2.cp===c.id?'on':''}" data-act="pickCp" data-id="${c.id}"><span class="avatar lg ${c.kind==='comercio'?'sq':''}" style="background:${avColor(c.name)}">${c.kind==='comercio'?ic('store'):initials(c.name)}</span><b>${esc(c.name.split(' ')[0])} ${c.kind==='persona'?esc(c.name.split(' ')[1]?.[0]||'')+'.':''}</b><small>${c.kind==='comercio'?'Comercio':'Persona'}</small></button>`).join(''):'<div class="empty" style="grid-column:1/-1">Ningún contacto coincide con la búsqueda.</div>'},
+  w2summary:()=>{const c=myContacts().find(x=>x.id===ui.w2.cp);const a=parseFloat(ui.w2.amount)||0;const ok=c&&a>0&&a<=S.balance&&a<=LOW_LIMIT&&canPay();
+    return`<div class="summary"><div class="row"><span>Para</span><b>${c?esc(c.name):'—'}</b></div><div class="row"><span>wallet_id</span><b class="mono">${c?c.walletId:'—'}</b></div><div class="row"><span>Celular</span><b class="mono">${c?fmtPhone(c.phone):'—'}</b></div><div class="row"><span>Comisión</span><b>S/ 0.00</b></div><div class="row"><span>Saldo después</span><b class="num">${fmt(S.balance-a)}</b></div></div>
+    ${a>LOW_LIMIT?`<div class="hint err" style="margin-top:6px">Los pagos de bajo monto tienen un tope de ${fmt(LOW_LIMIT)} por operación.</div>`:a>S.balance?`<div class="hint err" style="margin-top:6px">El monto supera tu saldo de ${fmt(S.balance)}.</div>`:''}
+    ${canPay()?'':`<div class="hint err" style="margin-top:6px">${esc(payBlockReason())}</div>`}
+    <button class="btn primary block" style="margin-top:12px" data-act="w2pay" ${ok&&!ui.w2.busy?'':'disabled'}>${ui.w2.busy?'<span class="spinner"></span>Procesando…':ic('send')+'Pagar '+fmt(a)}</button>`},
+  w2tracker:()=>tracker(ui.w2.tx&&findTx(ui.w2.tx)),
+  histFilters:()=>[['todos','Todos'],['CONFIRMADA','Confirmadas'],['PENDIENTE','En tránsito'],['FALLA','Fallidas'],['REVERSADA','Reversadas']].map(([k,l])=>`<button class="${ui.hist.filter===k?'on':''}" data-act="histFilter" data-k="${k}">${l}</button>`).join(''),
+  history:()=>{const q=ui.hist.q.toLowerCase(),f=ui.hist.filter;
+    const list=S.txs.filter(t=>(f==='todos'||(f==='FALLA'?['RECHAZADA','FALLIDA'].includes(t.status):f==='PENDIENTE'?['PENDIENTE','TIMEOUT','PROCESANDO','CREADA'].includes(t.status):t.status===f))&&(!q||t.cp.name.toLowerCase().includes(q)||t.ref.toLowerCase().includes(q)||t.note.toLowerCase().includes(q)));
+    return list.length?`<div class="tx-list">${list.map(txRow).join('')}</div>`:'<div class="empty">No hay operaciones con este filtro.</div>'},
+  /* W3 */
+  w3tracker:()=>tracker(ui.w3.tx&&findTx(ui.w3.tx)),
+  w3incoming:()=>{const list=S.txs.filter(t=>t.dir==='in'&&t.type==='qr').slice(0,4);return list.length?`<div class="tx-list">${list.map(txRow).join('')}</div>`:'<div class="empty">Aún no recibes pagos con QR.</div>'},
+  /* W4 */
+  w4resp:()=>ui.w4.responses.length?ui.w4.responses.map(r=>`<div class="rcard"><span class="code-b c${String(r.http)[0]}">${r.http}</span><span><b>${esc(r.title)}</b><small>${esc(r.sub)}</small><small class="mono">${hhmm(r.t)} · key ${short(r.key)}</small></span></div>`).join(''):'<div class="empty">Envía un request para ver cómo responde la API. Luego reintenta con la misma key.</div>',
+  idemStore:()=>{const rows=[...S.idem.values()].sort((a,b)=>b.last-a.last).slice(0,10);
+    return`<div class="scroll-x"><table class="t"><thead><tr><th>Idempotency key</th><th>Operación</th><th>Estado</th><th>Monto</th><th>Hits</th><th>Último uso</th></tr></thead><tbody>${rows.map(r=>{const tx=findTx(r.txId);return`<tr><td class="mono">${short(r.key)}</td><td class="mono">${tx?tx.ref:'—'}</td><td>${r.state==='EN_CURSO'?'<span class="pill info live">En curso</span>':pill(r.state)}</td><td class="num">${fmt(r.amount)}</td><td><span class="hits ${r.hits>1?'hot':''}">${r.hits}</span></td><td class="muted">${ago(r.last)}</td></tr>`}).join('')}</tbody></table></div>`},
+  idemStats:()=>{const v=[...S.idem.values()];const replays=v.reduce((a,r)=>a+r.hits-1,0);
+    return[['Keys guardadas',v.length,'var(--brand-2)'],['Reintentos absorbidos',replays,'var(--violet)'],['Callbacks duplicados ignorados',S.dupIgnored,'var(--accent)']].map(([k,n,c],i)=>`<div class="kpi"><span class="k"><i style="background:${c}"></i>${k}</span><span class="v num" data-count="${n}" data-ckey="idem${i}" data-fmt="int">${n}</span></div>`).join('')},
+  w4tests:()=>{const T=ui.w4.tests;if(!T)return`<div class="empty">Siete tests corren sobre una instancia aislada del motor de pagos, sin tocar tu saldo.</div>`;
+    const p=T.filter(t=>t.st==='pass').length;
+    return`<div class="tests">${T.map(t=>`<div class="test ${t.st}"><span class="st">${t.st==='run'?'<span class="spinner" style="width:13px;height:13px"></span>':t.st==='pass'?ic('check',3):t.st==='fail'?ic('x',3):''}</span><span>${esc(t.name)}${t.err?`<br><small style="color:var(--bad)">${esc(t.err)}</small>`:''}</span><small>${t.ms!=null?t.ms+' ms':''}</small></div>`).join('')}</div><div style="margin-top:10px;font-size:13px" class="muted">${p}/${T.length} tests en verde</div>`},
+  /* W5 */
+  forceChips:()=>[['ok','Éxito'],['timeout','Timeout'],['reject','Rechazo'],['pending','Pending']].map(([k,l])=>`<button class="chip ${S.force===k?'on':''}" data-act="force" data-k="${k}">${l}</button>`).join('')+`<button class="chip ${S.forceDup?'on':''}" data-act="forceDup">+ callback duplicado</button>`,
+  fsm:()=>{const tx=ui.w5.lastTx&&findTx(ui.w5.lastTx);const vis=new Set(tx?tx.timeline.map(e=>e.s):[]);const cur=tx?.status;
+    const cls=s=>{const c=cur===s?' cur '+({CONFIRMADA:'ok',RECHAZADA:'bad',FALLIDA:'bad',PENDIENTE:'warn',TIMEOUT:'warn',REVERSADA:'warn'}[s]||''):'';return'node'+(vis.has(s)?' v':'')+c};
+    const n=s=>`<div class="${cls(s)}">${s}</div>`;
+    return`<div class="fsm"><div class="col">${n('CREADA')}</div><div class="col">${n('PROCESANDO')}</div><div class="col">${n('CONFIRMADA')}${n('PENDIENTE')}${n('RECHAZADA')}${n('TIMEOUT')}</div><div class="col">${n('REVERSADA')}${n('FALLIDA')}</div></div>`},
+  w5timeline:()=>{const tx=ui.w5.lastTx&&findTx(ui.w5.lastTx);return tx?tracker(tx):'<div class="empty">Configura las fallas y ejecuta un pago de prueba a Comercio Sandbox.</div>'},
+  burst:()=>{const b=ui.w5.burst;if(!b)return'<div class="empty">La ráfaga envía 10 pagos de S/ 1.00 a S/ 5.00 con la configuración actual.</div>';
+    const keys=[['CONFIRMADA','Confirmada','var(--ok)'],['PENDIENTE','Pendiente','var(--warn)'],['RECHAZADA','Rechazada','var(--bad)'],['REVERSADA','Reversada','var(--violet)'],['FALLIDA','Fallida','var(--bad)']];
+    const cnt={};b.ids.forEach(id=>{const t=findTx(id);if(t){const k=t.status==='TIMEOUT'?'PENDIENTE':t.status;cnt[k]=(cnt[k]||0)+1}});
+    return`<div class="dist">${keys.map(([k,l,c])=>`<div class="dist-row"><span>${l}</span><span class="tr"><i style="width:${(cnt[k]||0)/10*100}%;background:${c}"></i></span><b class="num">${cnt[k]||0}</b></div>`).join('')}</div><div class="muted" style="font-size:12.5px;margin-top:10px">${b.done}/10 enviados${b.done<10?' · <span class="spinner" style="width:11px;height:11px;vertical-align:-1px"></span>':''}</div>`},
+  reversals:()=>S.reversals.length?`<div class="scroll-x"><table class="t"><thead><tr><th>Reverso</th><th>Operación</th><th>Motivo</th><th>Monto</th><th>Estado</th><th></th></tr></thead><tbody>${S.reversals.map(r=>`<tr><td class="mono">${r.id}</td><td class="mono">${r.ref}</td><td>${esc(r.reason)}</td><td class="num">${fmt(r.amount)}</td><td>${r.status==='COMPLETADO'?'<span class="pill ok">Completado</span>':r.status==='MANUAL'?'<span class="pill violet">Manual</span>':'<span class="pill bad">Fallido</span>'}</td><td class="r">${r.status==='FALLIDO'?`<button class="btn ghost sm" data-act="retryRev" data-id="${r.id}">${ic('refresh')}Reintentar</button>`:''}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Sin reversos registrados.</div>',
+  /* W6 */
+  sources:()=>{const wt=S.txs.filter(t=>t.status!=='CREADA'&&t.status!=='PROCESANDO');const sc=ui.w6.running?' scan':'';
+    return[['wallet','Wallet','Operaciones de la billetera',wt.length,wt.filter(t=>t.status==='CONFIRMADA').reduce((a,t)=>a+t.amount,0),'var(--brand-soft)','var(--brand-2)'],
+      ['server','Proveedor mock','Reporte de liquidación',myProvider().length,myProvider().filter(p=>p.status==='APROBADA').reduce((a,p)=>a+p.amount,0),'var(--accent-soft)','var(--accent)'],
+      ['book','Ledger local','Asientos contables',myLedger().length,myLedger().reduce((a,l)=>a+l.amount,0),'var(--ok-soft)','var(--ok)']]
+      .map(([i,t,s,n,sum,bg,c],k)=>`<div class="src r${sc}" style="--i:${k}"><span class="ic" style="background:${bg};color:${c}">${ic(i)}</span><b>${t}</b><small>${s}</small><span class="big num">${n} <small>registros</small></span><small class="num">Total movido ${fmt(sum)}</small></div>`).join('')},
+  reconProg:()=>ui.w6.running||ui.w6.progress?`<div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:6px" class="muted"><span>${ui.w6.running?'Cruzando registros por referencia del proveedor…':'Conciliación completada · '+dshort(S.lastRecon||now())}</span><span class="num">${Math.round(ui.w6.progress)}%</span></div><div class="prog"><i style="width:${ui.w6.progress}%"></i></div>`:'',
+  reconSum:()=>{const rows=ui.w6.rows;if(!rows)return'<div class="empty">Ejecuta la conciliación para ver el estado final de cada operación.</div>';
+    const res=rows.map(r=>ui.w6.resolved[r.ref]||r.res);
+    const c={ok:res.filter(x=>x==='ok').length,warn:res.filter(x=>x==='warn').length,bad:res.filter(x=>x==='bad').length,fixed:res.filter(x=>x==='fixed').length,hitl:res.filter(x=>x==='hitl').length};
+    const tot=rows.length,C=2*Math.PI*48;let off=0;
+    const segs=[['ok','var(--ok)'],['fixed','var(--brand-2)'],['hitl','var(--violet)'],['warn','var(--warn)'],['bad','var(--bad)']].map(([k,col])=>{const len=c[k]/tot*C;const s=`<circle class="seg" r="48" cx="66" cy="66" stroke="${col}" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-off}" transform="rotate(-90 66 66)"/>`;off+=len;return s}).join('');
+    const pct=Math.round((c.ok+c.fixed)/tot*100);
+    return`<div class="recon-sum"><svg class="donut" viewBox="0 0 132 132" role="img" aria-label="${pct}% conciliado"><circle r="48" cx="66" cy="66" stroke="var(--surface-2)"/>${segs}<text x="66" y="68" text-anchor="middle" font-size="24">${pct}%</text><text class="s" x="66" y="84" text-anchor="middle">conciliado</text></svg>
+    <div class="sum-l"><div><i style="background:var(--ok)"></i>Conciliadas<b>${c.ok}</b></div><div><i style="background:var(--brand-2)"></i>Ajustadas<b>${c.fixed}</b></div><div><i style="background:var(--violet)"></i>Escaladas a soporte<b>${c.hitl}</b></div><div><i style="background:var(--warn)"></i>En tránsito<b>${c.warn}</b></div><div><i style="background:var(--bad)"></i>Con diferencia<b>${c.bad}</b></div></div></div>`},
+  reconRows:()=>{const rows=ui.w6.rows;if(!rows)return'';
+    const cell=(v,miss,diff)=>v==null?`<span class="cellv miss">No existe</span>`:`<span class="cellv ${diff?'diff':''}">${v}</span>`;
+    return`<div class="scroll-x"><table class="t"><thead><tr><th>Ref. proveedor</th><th>Operación</th><th>Wallet</th><th>Proveedor</th><th>Ledger</th><th>Resultado</th><th></th></tr></thead><tbody>${rows.map(r=>{
+      const rs=ui.w6.resolved[r.ref];const amtDiff=r.w&&r.p&&r.w.amount!==r.p.amount;
+      const wv=r.w?`${fmt(r.w.amount)} · ${ST[r.w.status][1]}`:null,pv=r.p?`${fmt(r.p.amount)} · ${r.p.status.toLowerCase()}`:null,lv=r.l!=null?fmt(r.l):null;
+      const status=rs==='fixed'?'<span class="pill info">Ajustado</span>':rs==='hitl'?'<span class="pill violet">En soporte</span>':`<span class="pill ${r.res==='ok'?'ok':r.res==='warn'?'warn':'bad'}">${r.label}</span>`;
+      const act=!rs&&r.action?(r.action==='hitl'?`<button class="btn ghost sm" data-act="reconFix" data-ref="${r.ref}">${ic('headset')}Escalar</button>`:`<button class="btn soft sm" data-act="reconFix" data-ref="${r.ref}">${ic('check')}Ajustar ledger</button>`):'';
+      return`<tr><td class="mono">${r.ref}</td><td class="mono">${r.op}</td><td>${cell(wv,0,amtDiff)}</td><td>${cell(pv,0,amtDiff)}</td><td>${cell(lv,0,r.label==='Falta en ledger')}</td><td>${status}</td><td class="r">${act}</td></tr>`}).join('')}</tbody></table></div>`},
+  /* HITL */
+  hitlFilters:()=>[['ABIERTO','Abiertos'],['RESUELTO','Resueltos'],['todos','Todos']].map(([k,l])=>`<button class="${ui.hitl.filter===k?'on':''}" data-act="hitlFilter" data-k="${k}">${l} <span class="mono">${k==='todos'?S.tickets.length:S.tickets.filter(t=>t.status===k).length}</span></button>`).join(''),
+  hitlList:()=>{const list=S.tickets.filter(t=>ui.hitl.filter==='todos'||t.status===ui.hitl.filter);
+    const tic={KYC:['id','var(--info-soft)','var(--info)'],REVERSO:['undo','var(--bad-soft)','var(--bad)'],PAGO:['send','var(--warn-soft)','var(--warn)'],CONCILIACION:['scale','var(--violet-soft)','var(--violet)']};
+    return list.length?list.map(t=>{const[i,bg,c]=tic[t.type];const mins=Math.round((now()-t.created)/MIN);const sla=t.priority==='Alta'?60:240;
+      return`<button class="tk ${ui.hitl.sel===t.id?'on':''}" data-act="hitlSel" data-id="${t.id}"><span class="ic" style="background:${bg};color:${c}">${ic(i)}</span><span style="min-width:0"><b>${esc(t.title)}</b><small><span class="mono">${t.id}</span> · ${t.type} · prioridad ${t.priority.toLowerCase()}</small></span>${t.status==='ABIERTO'?`<span class="sla">${Math.max(0,sla-mins)} min SLA</span>`:'<span class="pill ok">Resuelto</span>'}</button>`}).join(''):'<div class="empty">No hay casos en esta bandeja.</div>'},
+  hitlDetail:()=>{const t=S.tickets.find(x=>x.id===ui.hitl.sel);if(!t)return'<div class="empty">Selecciona un caso para revisarlo.</div>';
+    const acc=t.type==='KYC'?S.accounts.find(a=>a.id===t.ref):null;const tx=S.txs.find(x=>x.ref===t.ref);
+    let acts='';
+    if(t.status==='ABIERTO'){
+      if(t.type==='KYC')acts=`<button class="btn okb" data-act="hitlDo" data-do="approve">${ic('check')}Aprobar cuenta</button><button class="btn danger" data-act="hitlDo" data-do="reject">${ic('x')}Rechazar</button>`;
+      else if(t.type==='REVERSO'||t.type==='PAGO')acts=`<button class="btn dark" data-act="hitlDo" data-do="manualRev">${ic('undo')}Reverso manual</button><button class="btn ghost" data-act="hitlDo" data-do="close">${ic('check')}Cerrar sin acción</button>`;
+      else acts=`<button class="btn dark" data-act="hitlDo" data-do="close">${ic('check')}Marcar como resuelto</button>`;
+    }
+    return`<div class="panel-h"><span class="tag hitl">${t.id}</span><h3>${esc(t.title)}</h3><div class="end">${t.status==='ABIERTO'?'<span class="pill warn live">Abierto</span>':'<span class="pill ok">Resuelto</span>'}</div></div>
+    <p style="margin-bottom:16px">${esc(t.detail)}</p>
+    <dl class="kv"><dt>Tipo</dt><dd>${t.type}</dd><dt>Prioridad</dt><dd>${t.priority}</dd><dt>Creado</dt><dd>${dshort(t.created)} (${ago(t.created)})</dd><dt>Referencia</dt><dd class="mono">${t.ref}</dd>
+    ${acc?`<dt>Titular</dt><dd>${esc(acc.name)}</dd><dt>Celular</dt><dd class="mono">${acc.phone}</dd><dt>Correo</dt><dd>${esc(acc.email)}</dd><dt>wallet_id</dt><dd class="mono">${acc.wallet?acc.wallet.id:'Sin wallet'}</dd><dt>Score KYC</dt><dd>${acc.kyc.score??'—'} / 100</dd><dt>Estado KYC</dt><dd>${kycPill(acc.kyc.status)}</dd>`:''}
+    ${tx?`<dt>Operación</dt><dd>${fmt(tx.amount)} a ${esc(tx.cp.name)} · ${pill(tx.status)}</dd><dt>Ref. proveedor</dt><dd class="mono">${tx.provRef}</dd>`:''}
+    ${t.resolution?`<dt>Resolución</dt><dd>${esc(t.resolution)}</dd>`:''}</dl>
+    ${acts?`<div class="divider"></div><div style="display:flex;gap:10px;flex-wrap:wrap">${acts}</div>`:''}
+    ${tx?`<div class="divider"></div><div class="eyebrow" style="margin-bottom:8px">Línea de tiempo de la operación</div><div class="tl">${tx.timeline.map(e=>`<div class="tl-i"><i class="${tlColor(e.s)}"></i><span>${esc(e.m)}</span><time>${hhmm(e.t)}</time></div>`).join('')}</div>`:''}`}
+};
+
+/* =========================================================
+   Vistas
+   ========================================================= */
+const ROUTES=[
+  {id:'inicio',label:'Inicio',icon:'home',group:'Billetera'},
+  {id:'activacion',label:'Mi wallet',icon:'wallet',w:'W1'},
+  {id:'contactos',label:'Contactos',icon:'userplus',w:'W1'},
+  {id:'contacto',label:'Pago a contacto',icon:'send',w:'W2',group:'Historias'},
+  {id:'qr',label:'Pago QR',icon:'qr',w:'W3'},
+  {id:'idempotencia',label:'Idempotencia',icon:'key',w:'W4'},
+  {id:'fallas',label:'Fallas y reversos',icon:'zap',w:'W5'},
+  {id:'conciliacion',label:'Conciliación',icon:'scale',w:'W6'},
+  {id:'soporte',label:'Soporte HITL',icon:'headset',group:'Operaciones',hitl:true}
+];
+const head=(w,cls,title,desc,end='')=>`<div class="page-head r"><div class="ttl">${w?`<div class="row"><span class="tag ${cls}">${w}</span><span class="eyebrow">Historia de usuario</span></div>`:''}<h1>${title}</h1><p>${desc}</p></div>${end?`<div class="end">${end}</div>`:''}</div>`;
+
+const V={
+  inicio(){
+    const a=curAcc();const hr=new Date().getHours();
+    return`<div data-region="banner"></div>
+    ${head('','', `${hr<12?'Buenos días':hr<19?'Buenas tardes':'Buenas noches'}, ${esc(a.name.split(' ')[0])}`,'Este es el resumen de tu billetera. Cada historia del reto tiene su propia sección en el menú y comparte los mismos datos.',`<a class="btn ghost" href="#soporte">${ic('headset')}Soporte</a><a class="btn primary" href="#contacto">${ic('send')}Nuevo pago</a>`)}
+    <section class="dash-top">
+      <div class="balance r" style="--i:1">
+        <svg class="rings" width="64" height="40" viewBox="0 0 64 40" aria-hidden="true"><circle cx="20" cy="20" r="16" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="3"/><circle cx="44" cy="20" r="16" fill="none" stroke="#FF6A2B" stroke-width="3"/></svg>
+        <span class="lbl">Saldo disponible <button data-act="toggleBal" aria-label="Mostrar u ocultar saldo">${ic(ui.hideBal?'eye':'eyeoff')}</button></span>
+        <div class="amt num" data-region="balance"></div>
+        <div class="meta"><span class="mono">${a.wallet?a.wallet.id:'Sin wallet'}</span><span>·</span><span>${esc(a.name)}</span><span data-region="accPill"></span></div>
+        <div class="qa">${canPay(a)?`<a class="main" href="#contacto">${ic('send')}Pagar a contacto</a><a href="#qr" data-qr="pagar">${ic('camera')}Pagar con QR</a><a href="#qr" data-qr="cobrar">${ic('qr')}Cobrar con QR</a>`:`<a class="main" href="#activacion">${ic('wallet')}${!a.wallet?'Generar mi wallet':'Activar pagos'}</a><a href="#contactos">${ic('userplus')}Registrar contactos</a>`}</div>
+      </div>
+      <div class="kpis" data-region="kpis"></div>
+    </section>
+    <section class="dash-mid">
+      <div class="panel r" style="--i:3"><div class="panel-h"><h3>Actividad de los últimos 7 días</h3><div class="end legend"><span><i style="background:var(--brand-2)"></i>Ingresos</span><span><i style="background:var(--accent)"></i>Pagos</span></div></div><div class="chart" data-region="chart"></div></div>
+      <div class="panel r" style="--i:4"><div class="panel-h"><h3>Estado de servicios</h3><span class="sub">Mocks conectados</span><div class="end"><a class="btn ghost sm" href="#fallas">${ic('zap')}Inyectar fallas</a></div></div><div data-region="health"></div></div>
+    </section>
+    <section class="dash-bot">
+      <div class="panel r" style="--i:5"><div class="panel-h"><h3>Últimos movimientos</h3><div class="end"><a class="btn ghost sm" href="#contacto">Ver historial</a></div></div><div data-region="recent"></div></div>
+      <div class="panel r" style="--i:6"><div class="panel-h"><h3>Backlog del reto</h3><span class="sub">Seis historias cubiertas</span></div><div class="cov" data-region="coverage"></div></div>
+    </section>`;
+  },
+  activacion(){
+    return`${head('W1','w1','Mi wallet','Genera tu wallet, verifica tu identidad y registra tus contactos. Tu wallet queda habilitada para pagos de bajo monto cuando el KYC está aprobado.')}
+    <div class="panel r" style="--i:1;margin-bottom:18px"><div class="stepper" data-region="actSteps"></div><div data-region="payState"></div></div>
+    <div class="two">
+      <div class="stack">
+        <div class="panel r" style="--i:2" data-region="walletCard"></div>
+        <div class="panel r" style="--i:3" id="kycBox"></div>
+      </div>
+      <div class="stack">
+        <div class="panel r" style="--i:4" data-region="ctMini"></div>
+        <div class="panel r" style="--i:5"><div class="panel-h"><h3>Reglas del KYC simulado</h3></div><div class="stack" style="gap:10px;font-size:13.5px">
+          <div style="display:flex;gap:10px;align-items:flex-start"><span class="pill ok">Aprobado</span><span class="muted">DNI con cualquier otro dígito final. Habilita los pagos de bajo monto.</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span class="pill warn">Pendiente</span><span class="muted">DNI terminado en 5. Biometría bajo el umbral: crea un caso en soporte HITL.</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span class="pill bad">Rechazado</span><span class="muted">DNI terminado en 0. El documento no coincide con RENIEC (mock).</span></div>
+          <div class="divider" style="margin:6px 0"></div><span class="muted" style="font-size:12.5px">Los datos de identidad que pide el KYC están por definir con cumplimiento y producto. El prototipo usa DNI y fecha de nacimiento.</span></div></div>
+      </div>
+    </div>`;
+  },
+  contactos(){
+    return`${head('W1','w1','Contactos','Registra a quién le envías dinero. Cada contacto necesita nombre, celular y el wallet_id que te comparta; ese wallet_id identifica a quién llega el pago.')}
+    <div class="two">
+      <div class="stack">
+        <div class="panel r" style="--i:1" id="ctForm"></div>
+        <div class="panel r" style="--i:2"><div class="panel-h"><h3>Wallets de prueba</h3><span class="sub">Toca una para llenar el formulario</span></div><div class="merchants" data-region="walletDir"></div></div>
+      </div>
+      <div class="panel r" style="--i:3"><div class="panel-h"><h3>Mis contactos</h3></div><div data-region="contactList"></div></div>
+    </div>`;
+  },
+  contacto(){
+    const amt=['10','20','50','100'];
+    return`<div data-region="banner"></div>${head('W2','w2','Pago a contacto','Crea una intención de pago, sigue su estado hasta la confirmación del proveedor simulado y revisa el comprobante y el historial.')}
+    <div class="two">
+      <div class="panel r" style="--i:1">
+        <div class="panel-h"><h3>Nuevo pago</h3><span class="sub">Persona o comercio</span></div>
+        <div class="stack">
+          <div class="search"><span>${ic('search')}</span><input class="input" id="w2q" data-in="w2.q" placeholder="Buscar por nombre o celular" value="${esc(ui.w2.q)}"></div>
+          <div class="contacts" data-region="contacts"></div>
+          <div class="field"><label for="w2amt">Monto</label><div class="amount-field"><span>S/</span><input id="w2amt" data-in="w2.amount" inputmode="decimal" value="${esc(ui.w2.amount)}" aria-label="Monto en soles"></div></div>
+          <div class="chips">${amt.map(a=>`<button class="chip" data-act="w2chip" data-v="${a}">S/ ${a}</button>`).join('')}</div>
+          <div class="field"><label for="w2note">Mensaje (opcional)</label><input class="input" id="w2note" data-in="w2.note" maxlength="40" value="${esc(ui.w2.note)}"></div>
+          <div data-region="w2summary"></div>
+          <div data-region="w2tracker"></div>
+        </div>
+      </div>
+      <div class="panel r" style="--i:2">
+        <div class="panel-h"><h3>Historial de transacciones</h3><span class="sub">Toca una operación para ver su comprobante</span></div>
+        <div class="hist-tools"><div class="seg" data-region="histFilters"></div><div class="search"><span>${ic('search')}</span><input class="input" id="histq" data-in="hist.q" placeholder="Buscar por nombre, OP o mensaje" value="${esc(ui.hist.q)}"></div></div>
+        <div data-region="history"></div>
+      </div>
+    </div>`;
+  },
+  qr(){
+    return`<div data-region="banner"></div>${head('W3','w3','Pago QR comercio','Genera un QR de cobro o lee uno de prueba desde la cámara o un archivo, paga a través del adquirente simulado y refleja el resultado.',`<div class="seg"><button class="${ui.w3.tab==='cobrar'?'on':''}" data-act="w3tab" data-k="cobrar">Cobrar</button><button class="${ui.w3.tab==='pagar'?'on':''}" data-act="w3tab" data-k="pagar">Pagar</button></div>`)}
+    <div id="w3body"></div>`;
+  },
+  idempotencia(){
+    return`${head('W4','w4','Idempotencia','Repite requests y callbacks sin duplicar operaciones. La key se guarda en un store y se valida antes de tocar el saldo.')}
+    <div class="kpis r" style="--i:1;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-bottom:18px" data-region="idemStats"></div>
+    <div class="idem-grid">
+      <div class="panel r" style="--i:2">
+        <div class="panel-h"><h3>Request de pago</h3><span class="sub">POST /v1/payments/intents</span></div>
+        <div class="stack">
+          <div class="field"><label for="w4key">Idempotency-Key</label><div class="keybox"><input class="input" id="w4key" data-in="w4.key" value="${ui.w4.key}"><button class="icon-btn" data-act="w4newkey" aria-label="Generar nueva key">${ic('refresh')}</button></div><span class="hint">Mantén la misma key para simular un reintento del cliente.</span></div>
+          <div class="field"><label for="w4amt">Monto a Camila Rojas</label><input class="input" id="w4amt" data-in="w4.amount" inputmode="decimal" value="${ui.w4.amount}"></div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">
+            <button class="btn primary" data-act="w4send">${ic('send')}Enviar request</button>
+            <button class="btn dark" data-act="w4retry">${ic('refresh')}Reintentar ×3</button>
+            <button class="btn ghost" data-act="w4concurrent">${ic('bolt2')}Doble clic concurrente</button>
+            <button class="btn ghost" data-act="w4callback">${ic('headset')}Callback duplicado</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel r" style="--i:3"><div class="panel-h"><h3>Respuestas de la API</h3><div class="end"><button class="btn ghost sm" data-act="w4clear">Limpiar</button></div></div><div class="resp" data-region="w4resp"></div></div>
+    </div>
+    <div class="two">
+      <div class="panel r" style="--i:4"><div class="panel-h"><h3>Store de idempotencia</h3><span class="sub">Últimas 10 keys</span></div><div data-region="idemStore"></div></div>
+      <div class="panel r" style="--i:5"><div class="panel-h"><h3>Tests</h3><div class="end"><button class="btn soft sm" data-act="w4tests">${ic('play')}Ejecutar tests</button></div></div><div data-region="w4tests"></div></div>
+    </div>`;
+  },
+  fallas(){
+    const f=S.faults;
+    const sl=(k,t,d)=>`<div class="slider"><div class="hd"><span>${t}<small>${d}</small></span><span class="val" id="fv-${k}">${Math.round(f[k]*100)}%</span></div><input type="range" id="f-${k}" min="0" max="100" step="5" value="${Math.round(f[k]*100)}" data-fault="${k}" aria-label="${t}"></div>`;
+    return`<div data-region="banner"></div>${head('W5','w5','Fallas y reversos','Inyecta timeouts, rechazos, pendientes y callbacks duplicados. Los timeouts con cargo disparan reversos y lo que no se resuelve solo pasa a soporte humano.')}
+    <div class="fault-grid">
+      <div class="panel r" style="--i:1">
+        <div class="panel-h"><h3>Fault injection</h3><span class="sub">Probabilidad por pago</span><div class="end"><button class="btn ghost sm" data-act="faultReset">Restablecer</button></div></div>
+        ${sl('timeout','Timeout','Sin respuesta en 8 s; luego consulta de estado')}
+        ${sl('reject','Rechazo','El proveedor devuelve 402')}
+        ${sl('pending','Pending','Respuesta 202, confirma por callback')}
+        ${sl('dup','Callback duplicado','El proveedor reenvía el mismo evento')}
+        <div class="divider"></div>
+        <div class="eyebrow" style="margin-bottom:8px">Forzar el siguiente resultado</div>
+        <div class="force" data-region="forceChips"></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:16px">
+          <button class="btn primary" data-act="w5run">${ic('play')}Pago de prueba</button>
+          <button class="btn dark" data-act="w5burst">${ic('zap')}Ráfaga de 10</button>
+        </div>
+      </div>
+      <div class="stack">
+        <div class="panel r" style="--i:2"><div class="panel-h"><h3>Máquina de estados</h3><span class="sub">Último pago de prueba</span></div><div data-region="fsm"></div></div>
+        <div class="r" style="--i:3" data-region="w5timeline"></div>
+      </div>
+    </div>
+    <div class="two">
+      <div class="panel r" style="--i:4"><div class="panel-h"><h3>Reversos</h3><span class="sub">Automáticos y manuales</span></div><div data-region="reversals"></div></div>
+      <div class="panel r" style="--i:5"><div class="panel-h"><h3>Resultado de la ráfaga</h3></div><div data-region="burst"></div></div>
+    </div>`;
+  },
+  conciliacion(){
+    return`${head('W6','w6','Conciliación','Compara la billetera, el reporte del proveedor simulado y el ledger local para detectar diferencias y dejar cada operación en un estado final.',`<button class="btn primary" data-act="reconRun" id="reconBtn">${ic('scale')}Ejecutar conciliación</button>`)}
+    <div class="sources" data-region="sources"></div>
+    <div class="panel r" style="--i:3;margin-bottom:18px"><div data-region="reconProg"></div><div data-region="reconSum" style="margin-top:4px"></div></div>
+    <div class="panel r" style="--i:4"><div class="panel-h"><h3>Detalle por operación</h3><span class="sub">Las diferencias aparecen primero</span></div><div data-region="reconRows"></div></div>`;
+  },
+  soporte(){
+    return`${head('','','Soporte HITL','Bandeja de escalamiento a soporte humano. Aquí llegan los KYC en revisión, los reversos fallidos y las diferencias de conciliación.')}
+    <div class="hitl-grid">
+      <div class="panel r" style="--i:1"><div class="panel-h"><h3>Casos</h3><div class="end"><div class="seg" data-region="hitlFilters"></div></div></div><div data-region="hitlList"></div></div>
+      <div class="panel r" style="--i:2" data-region="hitlDetail"></div>
+    </div>`;
+  }
+};
+
+/* ---------- Pantallas previas al ingreso (gate) ---------- */
+const brandHTML=`<span class="brand"><svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><rect width="38" height="38" rx="11" fill="#12285A"/><circle cx="15" cy="19" r="8" fill="none" stroke="#FFFFFF" stroke-width="3"/><circle cx="23" cy="19" r="8" fill="none" stroke="#FF6A2B" stroke-width="3"/></svg><span><b>AL<i>ia</i>DA</b><small>Tu billetera aliada</small></span></span>`;
+const G={
+  ingresar(){
+    return`<div class="gate">
+      <aside class="gate-art">${brandHTML}
+        <div style="display:flex;flex-direction:column;gap:16px"><h1>Paga, cobra y mueve tu plata con una <em>aliada</em>.</h1><p>Tu billetera digital para pagar a tus contactos desde el navegador, de forma segura y sin complicaciones.</p></div>
+        <div class="feat"><div style="--i:0"><span>${ic('userplus')}</span>Crea tu cuenta con 4 datos</div><div style="--i:1"><span>${ic('wallet')}</span>Genera tu wallet al instante</div><div style="--i:2"><span>${ic('shield')}</span>Verifica tu identidad y empieza a pagar</div></div>
+        <div class="floaters" aria-hidden="true">
+          <div class="fl" style="left:0;top:8px"><i style="background:rgba(61,208,142,.18);color:#3DD08E">${ic('check',2.6)}</i><span><b>Pago confirmado</b><small>S/ 25.00 a Camila R.</small></span></div>
+          <div class="fl" style="right:0;top:56px;animation-delay:-2s"><i style="background:rgba(255,106,43,.2);color:#FF8F5C">${ic('wallet')}</i><span><b>WLT-00418</b><small>Wallet activa</small></span></div>
+          <div class="fl" style="left:14%;top:106px;animation-delay:-4s"><i style="background:rgba(122,162,255,.2);color:#8FB4FF">${ic('shield')}</i><span><b>KYC aprobado</b><small>Pagos habilitados</small></span></div>
+        </div>
+      </aside>
+      <div class="gate-main"><div class="auth-card">
+        <div><span class="eyebrow">Bienvenida</span><h2>Ingresa a tu billetera</h2></div>
+        <form id="loginForm" class="stack" style="gap:14px" novalidate>
+          <div class="field"><label for="lg-user">Correo electrónico</label><input class="input" id="lg-user" type="email" data-in="login.user" autocomplete="username" value="${esc(ui.login.user)}"></div>
+          <div class="field"><label for="lg-pass">Contraseña</label><input class="input" id="lg-pass" type="password" data-in="login.pass" autocomplete="current-password" value="${esc(ui.login.pass)}"></div>
+          <div id="loginMsg"></div>
+          <button class="btn primary lg block" id="loginBtn" type="submit">Ingresar ${ic('arrow')}</button>
+        </form>
+        <div class="or">¿Aún no tienes cuenta?</div>
+        <a class="btn ghost lg block" href="#onboarding">${ic('userplus')}Crear mi cuenta</a>
+        <div class="divider" style="margin:4px 0"></div>
+        <div><div class="panel-h" style="margin-bottom:10px"><h3 style="font-size:14.5px">Cuentas de prueba</h3><span class="sub">Contraseña: Aliada#2026</span></div><div class="ql-list" data-region="quickLogin"></div></div>
+      </div></div>
+    </div>`;
+  },
+  onboarding(){
+    const back=ui.authed?['#inicio','Volver a mi billetera']:['#ingresar','Ya tengo cuenta, quiero ingresar'];
+    return`<div class="gate wide">
+      <aside class="gate-art">${brandHTML}
+        <div style="display:flex;flex-direction:column;gap:14px"><h1 style="font-size:clamp(30px,3vw,40px)">Crea tu cuenta en <em>1 minuto</em>.</h1><p>Solo necesitas tu nombre, tu correo, tu celular y una contraseña. Después generas tu wallet y verificas tu identidad dentro de la app.</p></div>
+        <div class="feat" data-region="onbSteps"></div>
+      </aside>
+      <div class="gate-main"><div class="onb-wrap">
+        <div class="gate-top"><a class="link-back" href="${back[0]}">${ic('undo')}${back[1]}</a></div>
+        ${head('W1','w1','Crea tu cuenta','Los cuatro campos son obligatorios. Si falta alguno o tiene un formato inválido, te indicamos cómo corregirlo.',`<div class="seg" role="tablist"><button class="${ui.onb.apiTab==='ui'?'on':''}" data-act="onbTab" data-k="ui">Vista UI</button><button class="${ui.onb.apiTab==='api'?'on':''}" data-act="onbTab" data-k="api">Vista API</button></div>`)}
+        <div class="two">
+          <div class="panel r" style="--i:1" id="onbBody"></div>
+          <div class="stack"><div class="panel r" style="--i:2" id="onbSide"></div></div>
+        </div>
+      </div></div>
+    </div>`;
+  }
+};
+function showGate(kind){
+  ui.route=kind;
+  $('#app').hidden=true;
+  const g=$('#gate');g.hidden=false;g.innerHTML=G[kind]();
+  $$('[data-region]',g).forEach(el=>el._h=null);
+  if(kind==='onboarding')renderOnb();
+  updateRegions();
+  window.scrollTo({top:0,behavior:'instant'});
+}
+async function doLogin(){
+  const u=ui.login.user.trim().toLowerCase(),p=ui.login.pass,box=$('#loginMsg'),btn=$('#loginBtn');if(!box)return;
+  const msg=(cls,icon,html)=>{box.innerHTML=`<div class="auth-msg ${cls}">${ic(icon)}<div>${html}</div></div>`};
+  box.innerHTML='';
+  if(!u||!p){msg('bad','alert','Ingresa tu correo electrónico y tu contraseña.');return}
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Validando…';
+  log(S,'POST','/v1/auth/login',`Correo ${u}`);
+  await new Promise(r=>setTimeout(r,700));
+  btn.disabled=false;btn.innerHTML='Ingresar '+ic('arrow');
+  const a=S.accounts.find(x=>x.email.toLowerCase()===u&&x.pass===p);
+  /* Error genérico: no se indica si falló el correo o la contraseña */
+  if(!a){log(S,'c4xx','/v1/auth/login','401 · INVALID_CREDENTIALS');msg('bad','alert','Correo o contraseña incorrectos. Revisa tus datos e inténtalo de nuevo.');return}
+  log(S,'c200','/v1/auth/login',`Token emitido · ${a.id}`);
+  enterAs(a.id,a.wallet&&canPay(a)?'inicio':'activacion');
+}
+function enterAs(id,route='inicio'){
+  switchUser(id);ui.authed=true;const a=curAcc();
+  if(!myContacts().some(c=>c.id===ui.w2.cp))ui.w2.cp=myContacts()[0]?.id||null;
+  toast('ok',`Hola, ${a.name.split(' ')[0]}`,canPay(a)?'Ingresaste a tu billetera.':payBlockReason(a));
+  go(route);location.hash=route;
+}
+
+/* ---------- Registro (H-01 · criterio 1) ---------- */
+const VALID={
+  name:v=>!v.trim()?'Ingresa tu nombre completo.':v.trim().split(/\s+/).length<2?'Escribe tu nombre y apellido, por ejemplo: Ana Torres.':'',
+  email:v=>!v.trim()?'Ingresa tu correo electrónico.':!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v.trim())?'Revisa tu correo: debe tener el formato nombre@dominio.com.':S.accounts.some(a=>a.email.toLowerCase()===v.trim().toLowerCase())?'Ya existe una cuenta con este correo. Ingresa con él o usa otro.':'',
+  phone:v=>!v.trim()?'Ingresa tu número de celular.':!/^9\d{8}$/.test(v.trim())?'Ingresa un celular de 9 dígitos que empiece con 9.':S.accounts.some(a=>a.phone===v.trim())?'Este celular ya está registrado. Ingresa con tu cuenta o usa otro número.':'',
+  pass:v=>!v?'Crea una contraseña.':!(v.length>=8&&/\d/.test(v)&&/[A-Z]/.test(v))?'Usa al menos 8 caracteres, una mayúscula y un número.':'',
+  terms:v=>v?'':'Acepta los términos para crear tu cuenta.'
+};
+const OKMSG={name:'Correcto',email:'Correcto',phone:'Correcto',pass:'Contraseña segura',terms:''};
+const onbValid=()=>Object.keys(VALID).every(k=>!VALID[k](ui.onb.d[k]));
+function passScore(p){let s=0;if(p.length>=8)s++;if(/[A-Z]/.test(p)&&/[a-z]/.test(p))s++;if(/\d/.test(p))s++;if(/[^A-Za-z0-9]/.test(p))s++;return s}
+function renderOnb(){
+  const b=$('#onbBody'),side=$('#onbSide');if(!b)return;
+  const o=ui.onb,d=o.d;
+  if(o.apiTab==='api')side.innerHTML=`<div class="panel-h"><h3>Contrato de la API</h3><span class="sub">Se actualiza con el formulario</span></div><div data-region="onbApi"></div>`;
+  else side.innerHTML=`<div class="panel-h"><h3>Qué sigue después</h3></div><div class="stack" style="gap:12px;font-size:13.5px">
+    <div style="display:flex;gap:10px;align-items:flex-start"><span class="tag w1">2</span><span><b>Genera tu wallet.</b> <span class="muted">Se crea al instante con un wallet_id único y queda activa.</span></span></div>
+    <div style="display:flex;gap:10px;align-items:flex-start"><span class="tag w1">3</span><span><b>Verifica tu identidad (KYC).</b> <span class="muted">Con el KYC aprobado se habilitan los pagos de bajo monto.</span></span></div>
+    <div style="display:flex;gap:10px;align-items:flex-start"><span class="tag w1">4</span><span><b>Registra tus contactos.</b> <span class="muted">Con su nombre, celular y el wallet_id que te compartan.</span></span></div></div>`;
+  if(o.result){
+    b.innerHTML=`<div class="step-body result"><svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><circle class="bgc" cx="50" cy="50" r="42" fill="none" stroke-width="6"/><circle class="pr" cx="50" cy="50" r="42" fill="none" stroke="var(--ok)" stroke-width="6" stroke-linecap="round" transform="rotate(-90 50 50)"/><path class="ck" d="M34 50l10 10 20-22" fill="none" stroke="var(--ok)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <h2>¡Tu cuenta está creada!</h2><p>Ya iniciaste sesión. El siguiente paso es generar tu wallet; luego verificas tu identidad para habilitar los pagos.</p>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center"><span class="mono">${o.result.id}</span><span class="pill mute">Sin wallet</span><span class="pill mute">KYC sin iniciar</span></div>
+      <div class="acts"><button class="btn primary lg" data-act="enterAs" data-id="${o.result.id}" data-route="activacion">${ic('wallet')}Generar mi wallet</button><button class="btn ghost" data-act="onbReset">Registrar otra persona</button></div></div>`;
+  }else{
+    const f=(k,l,type='text',extra='',full='')=>{const e=o.touched[k]?VALID[k](d[k]):'';const ok=o.touched[k]&&!e;return`<div class="field ${full}"><label for="o-${k}">${l} <span class="req" aria-hidden="true">*</span></label><input class="input ${e?'err':ok?'okk':''}" id="o-${k}" data-in="onb.d.${k}" type="${type}" value="${esc(d[k])}" ${extra} aria-invalid="${!!e}" aria-describedby="h-${k}"><span class="hint ${e?'err':ok?'okk':''}" id="h-${k}">${e||(ok?OKMSG[k]:'')}</span></div>`};
+    const ps=passScore(d.pass);const errs=Object.keys(VALID).filter(k=>o.touched[k]&&VALID[k](d[k])).length;
+    b.innerHTML=`<form id="regForm" class="step-body" novalidate><div class="panel-h"><h3>Tus datos</h3><span class="pill mute">Datos de ejemplo</span></div>
+      ${o.submitted&&errs?`<div class="auth-msg bad" style="margin-bottom:14px">${ic('alert')}<div>Corrige ${errs===1?'el campo marcado':`los ${errs} campos marcados`} para crear tu cuenta.</div></div>`:''}
+      <div class="grid-f">${f('name','Nombres y apellidos','text','autocomplete="name"','full')}${f('email','Correo electrónico','email','autocomplete="email"')}${f('phone','Celular','text','inputmode="numeric" maxlength="9" autocomplete="tel-national" placeholder="9XXXXXXXX"')}
+      ${(()=>{const e=o.touched.pass?VALID.pass(d.pass):'';const ok=o.touched.pass&&!e;return`<div class="field full"><label for="o-pass">Contraseña <span class="req" aria-hidden="true">*</span></label><input class="input ${e?'err':ok?'okk':''}" id="o-pass" data-in="onb.d.pass" type="password" value="${esc(d.pass)}" autocomplete="new-password" aria-describedby="h-pass"><div class="strength" id="strength">${[0,1,2,3].map(i=>`<i style="background:${i<ps?['var(--bad)','var(--warn)','var(--brand-2)','var(--ok)'][ps-1]:'var(--line)'}"></i>`).join('')}</div><span class="hint ${e?'err':ok?'okk':''}" id="h-pass">${e||(ok?OKMSG.pass:'Mínimo 8 caracteres, una mayúscula y un número. Se guarda cifrada (hash).')}</span></div>`})()}
+      <div class="full"><label class="check"><input type="checkbox" id="o-terms" data-in="onb.d.terms" ${d.terms?'checked':''}>Acepto los términos de uso y el tratamiento de mis datos personales (Ley 29733).</label><span class="hint err" id="h-terms">${o.touched.terms?VALID.terms(d.terms):''}</span></div></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn primary lg" type="submit" id="regBtn" ${o.busy?'disabled':''}>${o.busy?'<span class="spinner"></span>Creando tu cuenta…':'Crear mi cuenta '+ic('arrow')}</button></div></form>`;
+  }
+  b._h=null;
+  updateRegions();
+}
+async function doRegister(){
+  const o=ui.onb;if(o.busy)return;
+  Object.keys(VALID).forEach(k=>o.touched[k]=true);o.submitted=true;
+  const bad=Object.keys(VALID).find(k=>VALID[k](o.d[k]));
+  if(bad){log(S,'c4xx','/v1/users','422 · VALIDATION_ERROR');renderOnb();$('#o-'+bad)?.focus();return}
+  o.busy=true;renderOnb();
+  log(S,'POST','/v1/users',`${o.d.email.trim().toLowerCase()} · +51${o.d.phone}`);
+  await new Promise(r=>setTimeout(r,800));
+  const id='USR-'+(1001+S.accounts.length);
+  S.accounts.push({id,name:o.d.name.trim(),email:o.d.email.trim().toLowerCase(),phone:o.d.phone.trim(),pass:o.d.pass,created:now(),wallet:null,kyc:{status:'SIN_INICIAR'},balance:0,txs:[]});
+  log(S,'SYS','users.password',`Contraseña guardada como hash: $2b$12$${rand(8)}…`);
+  log(S,'c201','/v1/users',`${id} creado · sin wallet · KYC sin iniciar`);
+  o.busy=false;o.result={id,name:o.d.name.trim(),email:o.d.email.trim().toLowerCase()};
+  toast('ok','Cuenta creada','Ahora genera tu wallet.');
+  renderOnb();notify();
+}
+
+/* ---------- Mi wallet: generación y KYC (H-01 · criterios 2, 5 y 6) ---------- */
+const KVALID={
+  dni:v=>!v.trim()?'Ingresa tu número de DNI.':!/^\d{8}$/.test(v.trim())?'El DNI tiene 8 dígitos, sin letras ni espacios.':'',
+  birth:v=>{if(!v)return'Ingresa tu fecha de nacimiento.';const a=(now()-new Date(v).getTime())/(365.25*DAY);return a>=18?'':'Debes ser mayor de 18 años para usar la wallet.'}
+};
+async function genWallet(){
+  const a=curAcc();if(a.wallet||ui.act.busyWallet)return;
+  ui.act.busyWallet=true;notify();
+  log(S,'POST','/v1/wallets',`Usuario ${a.id}`);
+  await new Promise(r=>setTimeout(r,1100));
+  const taken=new Set([...S.accounts.filter(x=>x.wallet).map(x=>x.wallet.id),...OTHER_WALLETS.map(w=>w.walletId),...CONTACTS.map(c=>c.walletId)]);
+  let wid;do{wid='WLT-'+String(30000+Math.floor(Math.random()*69999))}while(taken.has(wid));
+  a.wallet={id:wid,status:'ACTIVA',created:now()};
+  if(S.balance===0){S.balance=150;}
+  ui.act.busyWallet=false;
+  log(S,'c201','/v1/wallets',`${wid} · ACTIVA · pagos ${canPay(a)?'habilitados':'deshabilitados hasta KYC aprobado'}`);
+  toast('ok','Wallet generada',`Tu wallet_id es ${wid}.${canPay(a)?'':' Verifica tu identidad para habilitar los pagos.'}`);
+  notify();renderAct();
+}
+function renderAct(){
+  const box=$('#kycBox');if(!box)return;const a=curAcc(),k=a.kyc,s=ui.act;
+  if(k.status==='APROBADO'||(k.status==='PENDIENTE'&&!s.running)){box.innerHTML='<div data-region="kycCard"></div>';box._h=null;updateRegions();return}
+  const f=(key,l,type,extra)=>{const e=s.touched?.[key]?KVALID[key](s.d[key]):'';return`<div class="field"><label for="k-${key}">${l} <span class="req" aria-hidden="true">*</span></label><input class="input ${e?'err':''}" id="k-${key}" data-in="act.d.${key}" type="${type}" value="${esc(s.d[key])}" ${extra} ${s.running?'disabled':''}><span class="hint err">${e}</span></div>`};
+  const rej=k.status==='RECHAZADO'&&!s.running;
+  box.innerHTML=`<form id="kycForm" novalidate><div class="panel-h"><span class="tag w1">2</span><h3>${rej?'Vuelve a verificar tu identidad':'Verifica tu identidad (KYC)'}</h3><div class="end">${kycPill(k.status)}</div></div>
+    ${rej?`<div class="auth-msg bad" style="margin-bottom:14px">${ic('x')}<div><b>No pudimos verificar tu identidad.</b> ${esc(k.reason||'')}. Revisa que tus datos coincidan con tu DNI y vuelve a intentarlo.</div></div>`:`<p class="muted" style="margin-bottom:14px">Solo disponible con sesión iniciada. Con el KYC aprobado tu wallet queda habilitada para pagos de bajo monto.</p>`}
+    ${s.kyc.length?'<div class="kyc-list" style="margin-bottom:16px" data-region="kyc"></div>':''}
+    <div class="grid-f">${f('dni','Número de DNI','text','inputmode="numeric" maxlength="8" placeholder="8 dígitos"')}${f('birth','Fecha de nacimiento','date','')}</div>
+    <div class="grid-f" style="margin-top:12px">
+      <button type="button" class="ropt" data-act="actDoc" ${s.running?'disabled':''} style="${s.doc?'border-color:var(--ok)':''}"><span class="ic">${ic(s.doc?'check':'id')}</span><b>${s.doc?'DNI de prueba cargado':'Usar DNI de prueba'}</b><small>Documento simulado: no se envía ninguna imagen</small></button>
+      <button type="button" class="ropt" data-act="actSelfie" ${s.running?'disabled':''} style="${s.selfie?'border-color:var(--ok)':''}"><span class="ic">${ic(s.selfie?'check':'face')}</span><b>${s.selfie?'Selfie capturada':'Capturar selfie simulada'}</b><small>Prueba de vida simulada, sin cámara</small></button>
+    </div>
+    ${s.touched&&(!s.doc||!s.selfie)?`<span class="hint err">${!s.doc&&!s.selfie?'Carga el DNI de prueba y captura la selfie para continuar.':!s.doc?'Carga el DNI de prueba para continuar.':'Captura la selfie para continuar.'}</span>`:''}
+    <div class="field" style="margin-top:14px"><label>Escenario del KYC simulado</label><div class="seg">${[['auto','Según DNI'],['APROBADO','Aprobar'],['PENDIENTE','Pendiente'],['RECHAZADO','Rechazar']].map(([x,l])=>`<button type="button" class="${s.scenario===x?'on':''}" data-act="actScenario" data-k="${x}" ${s.running?'disabled':''}>${l}</button>`).join('')}</div></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:16px"><button class="btn primary lg" type="submit" ${s.running?'disabled':''}>${s.running?'<span class="spinner"></span>Verificando…':ic('shield')+'Verificar identidad'}</button></div></form>`;
+  box._h=null;updateRegions();
+}
+async function runKyc(){
+  const s=ui.act,a=curAcc();if(s.running)return;
+  s.touched={dni:true,birth:true};
+  if(Object.keys(KVALID).some(k=>KVALID[k](s.d[k]))||!s.doc||!s.selfie){log(S,'c4xx','/v1/kyc/verifications','422 · datos de identidad incompletos');renderAct();return}
+  s.running=true;
+  const dni=s.d.dni.trim();
+  const sc=s.scenario==='auto'?(dni.endsWith('0')?'RECHAZADO':dni.endsWith('5')?'PENDIENTE':'APROBADO'):s.scenario;
+  s.kyc=[
+    {t:'Identidad contra RENIEC',icon:'id',st:'idle',msg:'En cola'},
+    {t:'Listas restrictivas PEP y OFAC',icon:'list',st:'idle',msg:'En cola'},
+    {t:'Prueba de vida y biometría',icon:'face',st:'idle',msg:'En cola'},
+    {t:'Score de riesgo',icon:'gauge',st:'idle',msg:'En cola'}
+  ];
+  const res={APROBADO:[['ok','DNI vigente, el nombre coincide'],['ok','Sin coincidencias'],['ok','Coincidencia facial 96%'],['ok','Score 88 · riesgo bajo']],
+    PENDIENTE:[['ok','DNI vigente, el nombre coincide'],['ok','Sin coincidencias'],['warn','Coincidencia facial 71%, bajo el umbral de 85%'],['warn','Score 62 · requiere revisión manual']],
+    RECHAZADO:[['bad','El nombre no coincide con el DNI'],['ok','Sin coincidencias'],['warn','No se pudo comparar: documento inválido'],['bad','Score 15 · riesgo alto']]}[sc];
+  renderAct();
+  log(S,'POST','/v1/kyc/verifications',`Authorization: Bearer … · ${a.id} · DNI ${dni.slice(0,4)}****`);
+  for(let i=0;i<4;i++){
+    s.kyc[i].st='run';s.kyc[i].msg='Consultando servicio simulado…';notify();
+    await new Promise(r=>setTimeout(r,700+Math.random()*400));
+    s.kyc[i].st=res[i][0];s.kyc[i].msg=res[i][1];notify();
+  }
+  await new Promise(r=>setTimeout(r,400));
+  const score={APROBADO:88,PENDIENTE:62,RECHAZADO:15}[sc];
+  const reason={APROBADO:'KYC aprobado automáticamente',PENDIENTE:'Coincidencia biométrica 71%: requiere revisión',RECHAZADO:'El nombre no coincide con el DNI (RENIEC mock)'}[sc];
+  a.kyc={status:sc,score,reason,at:now()};
+  if(sc==='PENDIENTE')a.kyc.ticket=createTicket(S,{type:'KYC',title:`Revisión KYC · ${a.name}`,detail:'Coincidencia biométrica de 71%, bajo el umbral automático de 85%. Validar la selfie contra la foto de RENIEC.',priority:'Media',ref:a.id}).id;
+  log(S,'c200','/v1/kyc/verifications',`Resultado ${sc} · score ${score} · pagos ${canPay(a)?'habilitados':'sin habilitar'}`);
+  s.running=false;s.touched=null;if(sc!=='RECHAZADO'){s.doc=false;s.selfie=false}
+  if(sc==='APROBADO')toast('ok','Identidad verificada',a.wallet?'Tu wallet quedó habilitada para pagos de bajo monto.':'Genera tu wallet para empezar a pagar.');
+  else if(sc==='PENDIENTE')toast('warn','Verificación en revisión',`Un analista revisará tu caso ${a.kyc.ticket}. Te avisaremos por SMS.`);
+  else toast('bad','Verificación rechazada','Revisa tus datos y vuelve a intentarlo.');
+  renderAct();notify();
+}
+
+/* ---------- Contactos (H-01 · criterio 3) ---------- */
+const CVALID={
+  name:v=>!v.trim()?'Ingresa el nombre de tu contacto.':'',
+  phone:v=>!v.trim()?'Ingresa el celular de tu contacto.':!/^9\d{8}$/.test(v.trim())?'Ingresa un celular de 9 dígitos que empiece con 9.':'',
+  walletId:v=>!v.trim()?'Ingresa el wallet_id que te compartió tu contacto.':!/^WLT-\d{5}$/i.test(v.trim())?'El wallet_id tiene el formato WLT-12345.':''
+};
+const walletExists=id=>[...S.accounts.filter(a=>a.wallet).map(a=>a.wallet.id),...OTHER_WALLETS.map(w=>w.walletId),...CONTACTS.map(c=>c.walletId)].includes(id);
+function renderCt(extraErr){
+  const box=$('#ctForm');if(!box)return;const s=ui.ct,d=s.d;
+  const f=(k,l,extra,ph)=>{const e=s.touched?.[k]?CVALID[k](d[k]):'';return`<div class="field"><label for="c-${k}">${l} <span class="req" aria-hidden="true">*</span></label><input class="input ${e?'err':''}" id="c-${k}" data-in="ct.d.${k}" value="${esc(d[k])}" placeholder="${ph}" ${extra}><span class="hint err">${e}</span></div>`};
+  box.innerHTML=`<form id="ctFormEl" novalidate><div class="panel-h"><h3>Nuevo contacto</h3><span class="sub">Los tres campos son obligatorios</span></div>
+    ${extraErr?`<div class="auth-msg bad" style="margin-bottom:14px">${ic('alert')}<div>${extraErr}</div></div>`:''}
+    <div class="stack" style="gap:6px">${f('name','Nombre','autocomplete="off"','Ej.: Rosa Huamán')}${f('phone','Celular','inputmode="numeric" maxlength="9"','9XXXXXXXX')}${f('walletId','wallet_id del contacto','autocomplete="off" style="font-family:var(--f-mono);text-transform:uppercase"','WLT-12345')}</div>
+    <p class="muted" style="font-size:12.5px;margin:4px 0 14px">Pídele a tu contacto el wallet_id que aparece en su sección "Mi wallet". Lo usamos para identificar a quién le envías dinero.</p>
+    <button class="btn primary block" type="submit" ${s.busy?'disabled':''}>${s.busy?'<span class="spinner"></span>Validando wallet…':ic('userplus')+'Registrar contacto'}</button></form>`;
+}
+async function addContact(){
+  const s=ui.ct;if(s.busy)return;s.touched={name:true,phone:true,walletId:true};
+  if(Object.keys(CVALID).some(k=>CVALID[k](s.d[k]))){log(S,'c4xx','/v1/contacts','422 · VALIDATION_ERROR');renderCt();return}
+  const wid=s.d.walletId.trim().toUpperCase();
+  s.busy=true;renderCt();
+  log(S,'GET',`/v1/wallets/${wid}`,'Validando que la wallet exista');
+  await new Promise(r=>setTimeout(r,650));
+  s.busy=false;
+  const own=curAcc().wallet?.id;
+  if(wid===own){log(S,'c4xx','/v1/contacts','422 · OWN_WALLET');renderCt('Ese wallet_id es tuyo. Ingresa el wallet_id de tu contacto.');return}
+  if(!walletExists(wid)){log(S,'c4xx',`/v1/wallets/${wid}`,'404 · WALLET_NOT_FOUND');renderCt(`No encontramos una wallet con el ID <b class="mono">${esc(wid)}</b>. Pídele a tu contacto que lo copie desde su app y vuelve a intentarlo.`);return}
+  const dup=myContacts().find(c=>c.walletId===wid);
+  if(dup){log(S,'c4xx','/v1/contacts','409 · CONTACT_ALREADY_EXISTS');renderCt(`Ya tienes a <b>${esc(dup.name)}</b> registrado con ese wallet_id.`);return}
+  const c={id:'c'+rand(6),owner:S.cur,name:s.d.name.trim(),phone:s.d.phone.trim(),walletId:wid,kind:'persona',created:now()};c.sub=c.walletId;
+  S.contacts.push(c);ui.ct.lastAdded=c.id;
+  log(S,'c201','/v1/contacts',`${c.name} · ${wid}`);
+  toast('ok','Contacto registrado',`${c.name} (${wid}) ya está en tus contactos.`);
+  s.d={name:'',phone:'',walletId:''};s.touched=null;renderCt();notify();
+}
+
+/* ---------- QR ---------- */
+function hashStr(s){let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+function drawQR(cv,text){
+  const n=29,ctx=cv.getContext('2d'),S2=cv.width,q=2,cell=S2/(n+q*2);
+  let seed=hashStr(text);const rnd=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return(seed>>>0)/4294967296};
+  ctx.fillStyle='#FFFFFF';ctx.fillRect(0,0,S2,S2);ctx.fillStyle='#0C1A33';
+  const inF=(x,y)=>(x<8&&y<8)||(x>n-9&&y<8)||(x<8&&y>n-9);
+  const center=(x,y)=>Math.abs(x-14)<=3&&Math.abs(y-14)<=3;
+  for(let y=0;y<n;y++)for(let x=0;x<n;x++){if(inF(x,y)||center(x,y))continue;if(rnd()<.48){const px=(x+q)*cell,py=(y+q)*cell;ctx.beginPath();ctx.roundRect?ctx.roundRect(px+.5,py+.5,cell-1,cell-1,cell*.28):ctx.rect(px,py,cell,cell);ctx.fill()}}
+  const finder=(fx,fy)=>{const px=(fx+q)*cell,py=(fy+q)*cell;ctx.fillStyle='#0C1A33';rr(px,py,7*cell,cell*1.6);ctx.fillStyle='#FFFFFF';rr(px+cell,py+cell,5*cell,cell*1.1);ctx.fillStyle='#0C1A33';rr(px+2*cell,py+2*cell,3*cell,cell*.8)};
+  const rr=(x,y,w,r)=>{ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,w,r):ctx.rect(x,y,w,w);ctx.fill()};
+  finder(0,0);finder(n-7,0);finder(0,n-7);
+  const c=(14+q)*cell+cell/2;ctx.fillStyle='#FFFFFF';rr(c-3.6*cell,c-3.6*cell,7.2*cell,cell*1.6);
+  ctx.lineWidth=cell*.7;ctx.strokeStyle='#0E2A66';ctx.beginPath();ctx.arc(c-cell*1.1,c,cell*1.9,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='#FF6A2B';ctx.beginPath();ctx.arc(c+cell*1.1,c,cell*1.9,0,Math.PI*2);ctx.stroke();
+}
+function qrPayload(){const a=parseFloat(ui.w3.genAmount);const acc=curAcc();return`aliada://pay?w=${acc.wallet?acc.wallet.id:''}&n=${encodeURIComponent(acc.name.split(' ').slice(0,2).join(' '))}${a>0?'&a='+a.toFixed(2):''}&c=${encodeURIComponent(ui.w3.genConcept||'')}&cur=PEN`}
+function renderW3(){
+  const b=$('#w3body');if(!b)return;const w=ui.w3;const acc=curAcc();
+  if(w.tab==='cobrar'){
+    const a=parseFloat(w.genAmount);
+    b.innerHTML=`<div class="qr-wrap step-body">
+      <div class="panel"><div class="panel-h"><h3>Generar QR de cobro</h3><span class="sub">QR local de prueba</span></div><div class="stack">
+        <div class="field"><label for="w3ga">Monto (déjalo vacío para que el cliente lo escriba)</label><div class="amount-field"><span>S/</span><input id="w3ga" data-in="w3.genAmount" inputmode="decimal" value="${esc(w.genAmount)}" aria-label="Monto a cobrar"></div></div>
+        <div class="field"><label for="w3gc">Concepto</label><input class="input" id="w3gc" data-in="w3.genConcept" maxlength="30" value="${esc(w.genConcept)}"></div>
+        <div class="summary"><div class="row"><span>Recibe</span><b>${esc(acc.name)}</b></div><div class="row"><span>wallet_id</span><b class="mono">${acc.wallet?acc.wallet.id:'Sin wallet'}</b></div><div class="row"><span>Vigencia</span><b>15 minutos</b></div></div>
+        <button class="btn primary" data-act="w3sim">${ic('down')}Simular que un cliente paga este QR</button>
+        <div><div class="eyebrow" style="margin:6px 0 8px">Cobros recibidos con QR</div><div data-region="w3incoming"></div></div>
+      </div></div>
+      <div class="qr-card"><span class="s">Escanea para pagar a</span><span class="m">${esc(acc.name.split(' ').slice(0,2).join(' '))}</span><div class="qr-plate anim"><canvas id="qrCv" width="440" height="440" aria-label="Código QR de cobro de prueba"></canvas></div><span class="m num" id="qrAmt">${a>0?fmt(a):'Monto libre'}</span><span class="s" id="qrCon">${esc(w.genConcept)}</span><span class="payload" id="qrPayload">${esc(qrPayload())}</span><span class="s">QR simulado: el patrón es de prueba y no lo lee una app real.</span></div>
+    </div>`;
+    drawQR($('#qrCv'),qrPayload());
+  }else{
+    b.innerHTML=`<div class="two step-body"><div class="panel"><div class="panel-h"><h3>Leer QR</h3><span class="sub">Cámara, archivo o QR de prueba</span></div>
+      <div class="read-opts">
+        <button class="ropt" data-act="w3cam"><span class="ic">${ic('camera')}</span><b>Cámara</b><small>Visor con lectura simulada</small></button>
+        <label class="ropt"><span class="ic">${ic('upload')}</span><b>Desde archivo</b><small>Imagen JPG o PNG</small><input type="file" accept="image/*" id="qrFile" aria-label="Subir imagen de QR"></label>
+        <button class="ropt" data-act="w3sample"><span class="ic">${ic('qr')}</span><b>QR de prueba</b><small>Elige un comercio abajo</small></button>
+      </div>
+      <div id="w3scan"></div>
+      <div class="eyebrow" style="margin:6px 0 10px">Comercios de prueba</div>
+      <div class="merchants">${MERCHANTS.map(m=>`<button class="merch" data-act="w3merchant" data-id="${m.id}"><span class="avatar sq" style="background:${avColor(m.name)}">${ic('store')}</span><span style="min-width:0"><b>${esc(m.name)}</b><small>${m.amount?fmt(m.amount):'Monto libre'} · ${m.city}</small></span></button>`).join('')}</div>
+    </div>
+    <div class="stack"><div id="w3sheet">${w.decoded?'':'<div class="panel"><div class="empty">Cuando leas un QR verás aquí el comercio, el monto y el botón para pagar.</div></div>'}</div><div data-region="w3tracker"></div></div></div>`;
+    const f=$('#qrFile');f&&f.addEventListener('change',()=>{const file=f.files[0];if(!file)return;const r=new FileReader();r.onload=()=>scanQR(r.result,MERCHANTS[file.size%MERCHANTS.length]);r.readAsDataURL(file)});
+    if(w.decoded)renderSheet();
+  }
+  updateRegions();
+}
+async function scanQR(imgSrc,merchant){
+  const box=$('#w3scan');if(!box)return;ui.w3.scanning=true;
+  box.innerHTML=`<div class="viewfinder" style="margin-bottom:16px">${imgSrc?`<img src="${imgSrc}" alt="Imagen a leer">`:`<canvas id="vfCv" width="300" height="300"></canvas>`}<div class="corners"></div><div class="laser"></div><div class="cap">Buscando código QR…</div></div>`;
+  if(!imgSrc)drawQR($('#vfCv'),merchant.id);
+  log(S,'SYS','qr.decode',imgSrc?'Imagen recibida, decodificación simulada':'Cámara simulada activa');
+  await new Promise(r=>setTimeout(r,1700));
+  box.innerHTML='';ui.w3.scanning=false;
+  decodeMerchant(merchant);
+}
+function decodeMerchant(m){
+  ui.w3.decoded=m;ui.w3.payAmount=m.amount?m.amount.toFixed(2):'';ui.w3.tx=null;
+  log(S,'GET',`/v1/acquirer/merchants/${m.id}`,`${m.name} · MCC ${m.mcc.split(' ')[0]}`);
+  renderSheet();notify();
+}
+function renderSheet(){
+  const el=$('#w3sheet');const m=ui.w3.decoded;if(!el||!m)return;
+  el.innerHTML=`<div class="sheet"><div class="panel-h"><span class="avatar lg sq" style="background:${avColor(m.name)}">${ic('store')}</span><div><h3>${esc(m.name)}</h3><span class="sub">${m.mcc} · ${m.city}</span></div><div class="end"><span class="pill ok">Comercio verificado</span></div></div>
+    <div class="field"><label for="w3pa">${m.amount?'Monto fijado por el comercio':'Ingresa el monto'}</label><div class="amount-field"><span>S/</span><input id="w3pa" data-in="w3.payAmount" inputmode="decimal" value="${esc(ui.w3.payAmount)}" ${m.amount?'readonly':''} aria-label="Monto a pagar"></div></div>
+    <div class="summary" style="margin-top:12px"><div class="row"><span>Código de comercio</span><b class="mono">${m.id}</b></div><div class="row"><span>Adquirente</span><b>Acquiring mock</b></div><div class="row"><span>Tu saldo</span><b class="num">${fmt(S.balance)}</b></div></div>
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap"><button class="btn ghost" data-act="w3cancel">Cancelar</button><button class="btn primary" style="flex:1" data-act="w3pay" id="w3payBtn">${ic('qr')}Pagar con QR</button></div></div>`;
+}
+
+/* ---------- Tests de idempotencia ---------- */
+function testState(){const st=makeState(false);st.speed=0;st.accounts=[{id:'T',name:'Test',wallet:{id:'WLT-T',status:'ACTIVA'},kyc:{status:'APROBADO'}}];st.cur='T';st.balance=500;return st}
+const CP={name:'Camila Rojas',sub:'987',kind:'persona'};
+const TESTS=[
+  ['Misma idempotency key crea una sola operación',async()=>{const st=testState(),k=uuid();await pay(st,{cp:CP,amount:10,idemKey:k});await pay(st,{cp:CP,amount:10,idemKey:k});if(st.txs.length!==1)throw new Error(`Se crearon ${st.txs.length} operaciones`)}],
+  ['El reintento devuelve la misma operación con 200',async()=>{const st=testState(),k=uuid();const a=await pay(st,{cp:CP,amount:10,idemKey:k});const b=await pay(st,{cp:CP,amount:10,idemKey:k});if(!b.replayed||b.tx.id!==a.tx.id||b.http!==200)throw new Error('La respuesta no coincide')}],
+  ['Petición concurrente con key en curso responde 409',async()=>{const st=testState(),k=uuid();const p=pay(st,{cp:CP,amount:10,idemKey:k});const b=await pay(st,{cp:CP,amount:10,idemKey:k});await p;if(b.http!==409)throw new Error('Esperaba 409, llegó '+b.http)}],
+  ['Callback duplicado no descuenta dos veces',async()=>{const st=testState();st.force='ok';st.forceDup=true;await pay(st,{cp:CP,amount:40,idemKey:uuid()});if(st.balance!==460)throw new Error('Saldo final '+st.balance);if(st.dupIgnored!==1)throw new Error('No se ignoró el duplicado')}],
+  ['Keys distintas crean operaciones distintas',async()=>{const st=testState();await pay(st,{cp:CP,amount:5,idemKey:uuid()});await pay(st,{cp:CP,amount:5,idemKey:uuid()});if(st.txs.length!==2)throw new Error('Se esperaban 2 operaciones')}],
+  ['Un pago rechazado no mueve el saldo',async()=>{const st=testState();st.force='reject';await pay(st,{cp:CP,amount:50,idemKey:uuid()});if(st.balance!==500)throw new Error('Saldo final '+st.balance)}],
+  ['Timeout con cargo en proveedor dispara reverso',async()=>{const st=testState();st.force='timeout';st.forceCharged=true;st.forceRevFail=false;const origRnd=Math.random;Math.random=()=>.9;try{const r=await pay(st,{cp:CP,amount:20,idemKey:uuid()});if(r.tx.status!=='REVERSADA')throw new Error('Estado final '+r.tx.status);if(st.reversals.length!==1)throw new Error('No se registró el reverso')}finally{Math.random=origRnd}}]
+];
+async function runTests(){
+  ui.w4.tests=TESTS.map(([name])=>({name,st:'idle'}));notify();
+  log(S,'SYS','tests.run','Suite de idempotencia · 7 casos');
+  let pass=0;
+  for(let i=0;i<TESTS.length;i++){
+    const t=ui.w4.tests[i];t.st='run';notify();
+    const t0=performance.now();
+    await new Promise(r=>setTimeout(r,280));
+    try{await TESTS[i][1]();t.st='pass';pass++}catch(e){t.st='fail';t.err=e.message}
+    t.ms=Math.max(1,Math.round(performance.now()-t0-280));notify();
+  }
+  toast(pass===TESTS.length?'ok':'bad','Tests terminados',`${pass} de ${TESTS.length} en verde.`);
+}
+
+/* =========================================================
+   Comprobante y modal
+   ========================================================= */
+function openReceipt(id){
+  const t=findTx(id);if(!t)return;
+  const st=t.status;const badge={CONFIRMADA:['ok','check','Pago exitoso'],RECHAZADA:['bad','x','Pago rechazado'],FALLIDA:['bad','x','Pago fallido'],REVERSADA:['info','undo','Pago reversado'],PENDIENTE:['warn','clock','Pago pendiente'],TIMEOUT:['warn','clock','Esperando proveedor'],PROCESANDO:['info','clock','Procesando'],CREADA:['info','clock','Creado']}[st];
+  const title=t.dir==='in'?(st==='CONFIRMADA'?'Recibiste un pago':badge[2]):badge[2];
+  openModal(`<div class="receipt"><button class="icon-btn x" data-act="closeModal" aria-label="Cerrar">${ic('x')}</button>
+    <div class="rc-head"><span class="badge ${badge[0]}">${ic(badge[1],2.6)}</span><span class="eyebrow">${title}</span><span class="amt num">${t.dir==='in'?'+ ':''}${fmt(t.amount)}</span>${pill(st)}</div>
+    <div class="rc-body">
+      <div class="row"><span>${t.dir==='in'?'De':'Para'}</span><b>${esc(t.cp.name)}</b></div>
+      <div class="row"><span>${t.cp.kind==='comercio'?'Comercio':'Contacto'}</span><b class="mono">${esc(t.cp.sub)}</b></div>
+      <div class="row"><span>Canal</span><b>${t.type==='qr'?'Pago con QR':'Pago a contacto'}</b></div>
+      ${t.note?`<div class="row"><span>Mensaje</span><b>${esc(t.note)}</b></div>`:''}
+      ${t.reason?`<div class="row"><span>Motivo</span><b>${esc(t.reason)}</b></div>`:''}
+      <div class="row"><span>Fecha y hora</span><b>${dshort(t.createdAt)}</b></div>
+      <div class="row"><span>N.º de operación</span><b class="mono">${t.ref}</b></div>
+      <div class="row"><span>Ref. proveedor</span><b class="mono">${t.provRef}</b></div>
+      <div class="row"><span>Idempotency key</span><b class="mono">${short(t.idemKey)}</b></div>
+    </div>
+    <div class="rc-tl"><div class="eyebrow" style="margin-bottom:8px">Estados</div><div class="tl">${t.timeline.map(e=>`<div class="tl-i"><i class="${tlColor(e.s)}"></i><span>${esc(e.m)}</span><time>${hhmm(e.t)}</time></div>`).join('')}</div></div>
+    <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap"><button class="btn ghost sm" data-act="copyRef" data-v="${t.ref}">${ic('copy')}Copiar N.º de operación</button>${['RECHAZADA','FALLIDA'].includes(st)?`<button class="btn ghost sm" data-act="escalate" data-id="${t.id}">${ic('headset')}Escalar a soporte</button>`:''}</div>
+  </div><div class="receipt-foot"></div>`);
+}
+function openModal(html){const m=$('#modal');m.innerHTML=`<div class="modal-box" role="dialog" aria-modal="true">${html}</div>`;m.hidden=false;setTimeout(()=>$('.modal-box button',m)?.focus(),50)}
+function closeModal(){$('#modal').hidden=true}
+
+/* =========================================================
+   Toasts, consola, chrome
+   ========================================================= */
+function toast(kind,title,msg){
+  const map={ok:['var(--ok-soft)','var(--ok)','check'],bad:['var(--bad-soft)','var(--bad)','x'],warn:['var(--warn-soft)','var(--warn)','clock'],info:['var(--info-soft)','var(--info)','undo'],violet:['var(--violet-soft)','var(--violet)','headset']}[kind]||['var(--surface-2)','var(--fg)','check'];
+  const el=document.createElement('div');el.className='toast';el.setAttribute('role','status');
+  el.innerHTML=`<span class="ic" style="background:${map[0]};color:${map[1]}">${ic(map[2],2.4)}</span><div><b>${esc(title)}</b><span>${esc(msg)}</span></div>`;
+  const box=$('#toasts');box.prepend(el);while(box.children.length>4)box.lastChild.remove();
+  setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),320)},4200);
+}
+let lastLogN=0;
+function bumpFab(){const f=$('#fab');if(!f)return;f.classList.remove('bump');void f.offsetWidth;f.classList.add('bump')}
+function updateChrome(){
+  $('#fabN').textContent=S.logs.length;
+  const a=curAcc();
+  $('#who').innerHTML=`<span class="avatar" style="background:${avColor(a.name)}">${initials(a.name)}</span><span class="txt"><b>${esc(a.name.split(' ').slice(0,2).join(' '))}</b><span class="mono">${a.wallet?a.wallet.id:'Sin wallet'}</span></span>`;
+  $('#accPill').innerHTML=payPill(a);
+  const open=S.tickets.filter(t=>t.status==='ABIERTO').length;
+  const c=$('#nav .cnt');if(c){c.textContent=open;c.hidden=!open}
+}
+function renderNav(){
+  let h='',g='';
+  for(const r of ROUTES){if(r.group&&r.group!==g){g=r.group;h+=`<div class="nav-label">${g}</div>`}
+    h+=`<a href="#${r.id}" data-route="${r.id}" class="${ui.route===r.id?'on':''}">${ic(r.icon)}<span>${r.label}</span>${r.w?`<span class="wtag">${r.w}</span>`:''}${r.hitl?'<span class="cnt"></span>':''}</a>`}
+  $('#nav').innerHTML=h;
+}
+function setTheme(t){
+  try{t?localStorage.setItem('aliada-theme',t):localStorage.removeItem('aliada-theme')}catch(e){}
+  if(t)document.documentElement.dataset.theme=t;else delete document.documentElement.dataset.theme;
+  const dark=document.documentElement.dataset.theme==='dark'||(!document.documentElement.dataset.theme&&matchMedia('(prefers-color-scheme: dark)').matches);
+  $('#themeBtn').innerHTML=ic(dark?'sun':'moon');
+}
+
+/* =========================================================
+   Router con carga por secciones
+   ========================================================= */
+function skeleton(){
+  return`<div class="sk-grid"><div class="sk" style="height:18px;width:120px"></div><div class="sk" style="height:38px;width:min(420px,80%)"></div><div class="sk" style="height:16px;width:min(560px,90%)"></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:10px"><div class="sk" style="height:200px"></div><div class="sk" style="height:200px"></div><div class="sk" style="height:200px"></div></div>
+  <div class="sk" style="height:260px"></div></div>`;
+}
+let navToken=0;
+async function go(route,opts={}){
+  if(route==='onboarding'||route==='ingresar'||!ui.authed){++navToken;showGate(route==='onboarding'?'onboarding':'ingresar');return}
+  if(!V[route])route='inicio';
+  const tok=++navToken;
+  $('#gate').hidden=true;$('#gate').innerHTML='';$('#app').hidden=false;
+  ui.route=route;renderNav();updateChrome();
+  const r=ROUTES.find(x=>x.id===route);
+  $('#crumbTitle').textContent=r.label;$('#crumbSmall').textContent=r.w?`Historia ${r.w} · Tu Billetera ALiaDA`:'Tu Billetera ALiaDA';
+  const bar=$('#routeBar');bar.style.opacity=1;bar.style.width='35%';
+  const main=$('#view');
+  if(!opts.instant){main.innerHTML=skeleton();await new Promise(res=>setTimeout(res,reduceMotion?0:380));if(tok!==navToken)return}
+  bar.style.width='100%';setTimeout(()=>{bar.style.opacity=0;setTimeout(()=>bar.style.width=0,300)},250);
+  main.innerHTML=V[route]();
+  $$('[data-region]',main).forEach(el=>el._h=null);
+  if(route==='onboarding')renderOnb();
+  if(route==='qr')renderW3();
+  if(route==='activacion')renderAct();
+  if(route==='contactos')renderCt();
+  updateRegions();
+  if(!opts.keepScroll)window.scrollTo({top:0,behavior:'instant'});
+}
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h!==ui.route)go(h)});
+
+/* =========================================================
+   Acciones
+   ========================================================= */
+function payErr(e){toast('bad','No se pudo crear el pago',e.message)}
+function pushResp(r){ui.w4.responses.unshift({...r,t:now()});ui.w4.responses=ui.w4.responses.slice(0,14);notify()}
+const A={
+  toggleBal(el){ui.hideBal=!ui.hideBal;el.innerHTML=ic(ui.hideBal?'eye':'eyeoff');if(!ui.hideBal)delete countPrev.bal;notify()},
+  receipt(el){openReceipt(el.dataset.id)},
+  closeModal,
+  copyRef(el){const v=el.dataset.v;const done=()=>toast('ok','Copiado',`${v} está en tu portapapeles.`);try{navigator.clipboard.writeText(v).then(done,()=>toast('warn','Copia manual',`Selecciona y copia: ${v}`))}catch(e){toast('warn','Copia manual',`Selecciona y copia: ${v}`)}},
+  escalate(el){const t=findTx(el.dataset.id);if(!t)return;const ex=S.tickets.find(k=>k.ref===t.ref&&k.status==='ABIERTO');if(ex){toast('info','Ya existe un caso',`${ex.id} sigue abierto para ${t.ref}.`);return}
+    const tk=createTicket(S,{type:'PAGO',title:`Reclamo · ${t.ref} a ${t.cp.name}`,detail:`Operación ${ST[t.status][1].toLowerCase()} por ${fmt(t.amount)}. Motivo: ${t.reason||'sin detalle'}. Revisar con el proveedor ${t.provRef}.`,priority:'Media',ref:t.ref});ui.hitl.sel=tk.id;closeModal()},
+  /* onboarding */
+  onbTab(el){ui.onb.apiTab=el.dataset.k;$$('[data-act=onbTab]').forEach(b=>b.classList.toggle('on',b===el));renderOnb()},
+  enterAs(el){enterAs(el.dataset.id,el.dataset.route||'inicio')},
+  genWallet(){genWallet()},
+  actDoc(){ui.act.doc=!ui.act.doc;renderAct()},
+  actSelfie(){ui.act.selfie=true;renderAct();toast('ok','Selfie capturada','Prueba de vida simulada.')},
+  actScenario(el){ui.act.scenario=el.dataset.k;renderAct()},
+  fillCt(el){ui.ct.d={name:el.dataset.n,phone:el.dataset.p,walletId:el.dataset.w};ui.ct.touched=null;renderCt();$('#c-name')?.focus()},
+  loginAs(el){const a=S.accounts.find(x=>x.id===el.dataset.id);if(!a)return;ui.login.user=a.email;ui.login.pass=a.pass;$('#lg-user').value=a.email;$('#lg-pass').value=a.pass;doLogin()},
+  logout(){const a=curAcc();log(S,'SYS','session.end',a?a.id:'');ui.authed=false;closeModal();$('#console').classList.remove('open');go('ingresar');location.hash='ingresar';toast('info','Sesión cerrada','Vuelve pronto.')},
+  onbReset(){const o=ui.onb;o.result=null;o.busy=false;o.touched={};o.submitted=false;o.idem=uuid();o.d={name:'',email:'',phone:'',pass:'',terms:false};renderOnb()},
+  /* W2 */
+  pickCp(el){ui.w2.cp=el.dataset.id;notify()},
+  w2chip(el){ui.w2.amount=el.dataset.v+'.00';$('#w2amt').value=ui.w2.amount;notify()},
+  async w2pay(){if(ui.w2.busy)return;const c=myContacts().find(x=>x.id===ui.w2.cp);if(!c)return;const amount=round2(parseFloat(ui.w2.amount));ui.w2.busy=true;notify();
+    try{const p=pay(S,{cp:{name:c.name,sub:c.walletId,walletId:c.walletId,phone:c.phone,kind:c.kind},amount,note:ui.w2.note,type:'p2p',onCreate:tx=>{ui.w2.tx=tx.id}});await p}catch(e){payErr(e)}finally{ui.w2.busy=false;notify()}},
+  histFilter(el){ui.hist.filter=el.dataset.k;notify()},
+  /* W3 */
+  w3tab(el){ui.w3.tab=el.dataset.k;$$('[data-act=w3tab]').forEach(b=>b.classList.toggle('on',b===el));renderW3()},
+  async w3sim(){const a=parseFloat(ui.w3.genAmount)||round2(5+Math.random()*30);const from=pick(['Diego Salazar','Mariana Flores','Renzo Paredes','Cliente QR 4821']);toast('info','QR escaneado',`${from} está pagando ${fmt(a)}.`);await receive(S,{amount:a,from,concept:ui.w3.genConcept||'Cobro con QR'})},
+  w3cam(){scanQR(null,pick(MERCHANTS))},
+  w3sample(){$('.merchants')?.scrollIntoView({behavior:'smooth',block:'center'})},
+  w3merchant(el){const m=MERCHANTS.find(x=>x.id===el.dataset.id);scanQR(null,m)},
+  w3cancel(){ui.w3.decoded=null;ui.w3.tx=null;renderW3()},
+  async w3pay(){if(ui.w3.busy)return;const m=ui.w3.decoded;const amount=round2(parseFloat(ui.w3.payAmount));ui.w3.busy=true;const btn=$('#w3payBtn');if(btn){btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Procesando…'}
+    try{const p=pay(S,{cp:{id:m.id,name:m.name,sub:m.mcc,kind:'comercio'},amount,type:'qr',onCreate:tx=>{ui.w3.tx=tx.id}});const r=await p;if(r.tx.status==='CONFIRMADA')setTimeout(()=>openReceipt(r.tx.id),500)}catch(e){payErr(e)}finally{ui.w3.busy=false;if(btn){btn.disabled=false;btn.innerHTML=ic('qr')+'Pagar con QR'}}},
+  /* W4 */
+  w4newkey(){ui.w4.key=uuid();$('#w4key').value=ui.w4.key;toast('info','Nueva key',short(ui.w4.key))},
+  async w4send(){const k=ui.w4.key,amount=round2(parseFloat(ui.w4.amount));
+    try{const r=await pay(S,{cp:{name:'Camila Rojas',sub:'987 112 340',kind:'persona'},amount,idemKey:k,type:'p2p'});ui.w4.lastTx=r.tx.id;
+      pushResp(r.replayed?{http:r.http,key:k,title:r.http===409?'409 Conflict · operación en curso':`200 OK · replay de ${r.tx.ref}`,sub:r.http===409?'La primera petición aún no termina: no se crea otra.':`Respuesta guardada. Estado ${ST[r.tx.status][1].toLowerCase()}, saldo intacto.`}:{http:201,key:k,title:`201 Created · ${r.tx.ref}`,sub:`Operación nueva por ${fmt(r.tx.amount)} · estado ${ST[r.tx.status][1].toLowerCase()}`})}
+    catch(e){pushResp({http:422,key:k,title:'422 Unprocessable',sub:e.message})}},
+  async w4retry(){if(ui.w4.busy)return;ui.w4.busy=true;for(let i=0;i<3;i++){await A.w4send();await new Promise(r=>setTimeout(r,250))}ui.w4.busy=false},
+  async w4concurrent(){const k=uuid();ui.w4.key=k;$('#w4key').value=k;const amount=round2(parseFloat(ui.w4.amount));const cp={name:'Camila Rojas',sub:'987 112 340',kind:'persona'};
+    try{const p1=pay(S,{cp,amount,idemKey:k,type:'p2p'});const p2=pay(S,{cp,amount,idemKey:k,type:'p2p'});const r2=await p2;pushResp({http:r2.http,key:k,title:'409 Conflict · segundo clic',sub:'Llegó mientras la primera seguía en curso: se descarta.'});const r1=await p1;ui.w4.lastTx=r1.tx.id;pushResp({http:201,key:k,title:`201 Created · ${r1.tx.ref}`,sub:`Solo se creó una operación · ${ST[r1.tx.status][1].toLowerCase()}`})}catch(e){pushResp({http:422,key:k,title:'422 Unprocessable',sub:e.message})}},
+  w4callback(){const tx=(ui.w4.lastTx&&findTx(ui.w4.lastTx))||S.txs.find(t=>t.status==='CONFIRMADA'&&t.dir==='out');if(!tx){toast('warn','Sin operación','Envía primero un request.');return}
+    const before=S.balance;const applied=deliverCallback(S,tx,'APROBADA');pushResp({http:200,key:tx.idemKey,title:applied?`Callback aplicado · ${tx.ref}`:`Callback ignorado · ${tx.ref}`,sub:applied?'Primer evento: se confirmó la operación.':`El evento ya existía. Saldo antes ${fmt(before)}, después ${fmt(S.balance)}.`})},
+  w4clear(){ui.w4.responses=[];notify()},
+  w4tests(){runTests()},
+  /* W5 */
+  force(el){S.force=S.force===el.dataset.k?null:el.dataset.k;notify()},
+  forceDup(){S.forceDup=!S.forceDup;notify()},
+  faultReset(){S.faults={timeout:0,reject:0,pending:0,dup:0};S.force=null;S.forceDup=false;['timeout','reject','pending','dup'].forEach(k=>{$('#f-'+k).value=0;$('#fv-'+k).textContent='0%'});notify();toast('info','Fallas desactivadas','Los pagos vuelven al flujo normal.')},
+  async w5run(){const cp={name:'Comercio Sandbox',sub:'Pruebas de fallas',kind:'comercio'};
+    try{const p=pay(S,{cp,amount:round2(3+Math.random()*7),type:'p2p',note:'Prueba de fallas',onCreate:tx=>{ui.w5.lastTx=tx.id}});await p}catch(e){payErr(e)}},
+  async w5burst(){if(ui.w5.busy)return;ui.w5.busy=true;ui.w5.burst={ids:[],done:0};const cp={name:'Comercio Sandbox',sub:'Pruebas de fallas',kind:'comercio'};const sp=S.speed;S.speed=.3;notify();
+    try{for(let i=0;i<10;i++){const p=pay(S,{cp,amount:round2(1+Math.random()*4),type:'p2p',note:'Ráfaga',onCreate:tx=>{ui.w5.burst.ids.push(tx.id);ui.w5.lastTx=tx.id}});await p;ui.w5.burst.done++;notify()}}catch(e){payErr(e)}finally{S.speed=sp;ui.w5.busy=false;notify()}},
+  async retryRev(el){const rv=S.reversals.find(r=>r.id===el.dataset.id);const tx=findTx(rv.txId);el.disabled=true;el.innerHTML='<span class="spinner"></span>';log(S,'POST','/v1/reversals',`Reintento ${rv.id}`);await new Promise(r=>setTimeout(r,1100));
+    rv.status='COMPLETADO';if(tx){provSet(S,tx,'REVERSADA');tx.reason='Reverso completado en reintento';step(S,tx,'REVERSADA','Reverso completado en el reintento')}
+    const tk=S.tickets.find(t=>t.ref===rv.ref&&t.status==='ABIERTO');if(tk){tk.status='RESUELTO';tk.resolution='Reverso completado en reintento automático'}
+    toast('info','Reverso completado',`${rv.ref} quedó reversada.`);notify()},
+  /* W6 */
+  async reconRun(){if(ui.w6.running)return;ui.w6.running=true;ui.w6.progress=0;ui.w6.rows=null;ui.w6.resolved={};const btn=$('#reconBtn');if(btn)btn.disabled=true;notify();
+    log(S,'SYS','recon.start',`Wallet ${S.txs.length} · Proveedor ${myProvider().length} · Ledger ${myLedger().length}`);
+    for(let p=0;p<=100;p+=4){ui.w6.progress=p;notify();await new Promise(r=>setTimeout(r,45))}
+    ui.w6.rows=reconcile(S);ui.w6.running=false;S.lastRecon=now();if(btn)btn.disabled=false;
+    const bad=ui.w6.rows.filter(r=>r.res==='bad').length;log(S,'SYS','recon.done',`${ui.w6.rows.length} referencias · ${bad} diferencias`);
+    toast(bad?'warn':'ok','Conciliación terminada',bad?`Encontramos ${bad} diferencias para revisar.`:'Las tres fuentes coinciden.');notify()},
+  reconFix(el){const row=ui.w6.rows.find(r=>r.ref===el.dataset.ref);if(!row)return;
+    if(row.action==='ledger'){S.ledger.push({id:'LG-'+rand(5),ref:row.ref,amount:row.w.amount,kind:row.w.dir==='in'?'CREDITO':'DEBITO',t:now(),owner:S.cur});ui.w6.resolved[row.ref]='fixed';log(S,'SYS','ledger.post',`Asiento faltante creado · ${row.ref}`);toast('ok','Ledger ajustado',`Se registró el asiento de ${row.op}.`)}
+    else if(row.action==='adjust'){const l=S.ledger.find(x=>x.ref===row.ref);const diff=round2(row.p.amount-row.w.amount);if(l)l.amount=row.p.amount;else S.ledger.push({id:'LG-'+rand(5),ref:row.ref,amount:row.p.amount,kind:'DEBITO',t:now(),owner:S.cur});row.w.amount=row.p.amount;S.balance=round2(S.balance-diff);row.w.timeline.push({s:row.w.status,t:now(),m:`Ajuste de conciliación: ${fmt(diff)} según proveedor`});ui.w6.resolved[row.ref]='fixed';log(S,'SYS','ledger.adjust',`${row.ref} · diferencia ${fmt(diff)}`);toast('ok','Diferencia ajustada',`${row.op}: se aplicó ${fmt(diff)} según el proveedor.`)}
+    else{const ex=S.tickets.find(t=>t.ref===(row.w?row.w.ref:row.ref)&&t.status==='ABIERTO');if(!ex)createTicket(S,{type:'CONCILIACION',title:`${row.label} · ${row.w?row.w.ref:row.ref}`,detail:`Wallet: ${row.w?fmt(row.w.amount)+' '+ST[row.w.status][1].toLowerCase():'no existe'}. Proveedor: ${row.p?fmt(row.p.amount)+' '+row.p.status.toLowerCase():'no existe'}. Ledger: ${row.l!=null?fmt(row.l):'sin asiento'}.`,priority:'Alta',ref:row.w?row.w.ref:row.ref});ui.w6.resolved[row.ref]='hitl'}
+    notify()},
+  /* HITL */
+  hitlFilter(el){ui.hitl.filter=el.dataset.k;notify()},
+  hitlSel(el){ui.hitl.sel=el.dataset.id;notify()},
+  hitlDo(el){const t=S.tickets.find(x=>x.id===ui.hitl.sel);if(!t)return;const d=el.dataset.do;
+    if(t.type==='KYC'){const a=S.accounts.find(x=>x.id===t.ref);if(a){a.kyc.status=d==='approve'?'APROBADO':'RECHAZADO';a.kyc.score=d==='approve'?86:a.kyc.score;a.kyc.reason=d==='approve'?'Aprobado por analista':'Rechazado por analista';a.kyc.at=now();delete a.kyc.ticket}t.resolution=d==='approve'?'Identidad validada manualmente: pagos habilitados':'Identidad no validada: pagos sin habilitar';log(S,'SYS','hitl.resolve',`${t.id} · ${a?.id} KYC ${a?.kyc.status}`);toast(d==='approve'?'ok':'bad',d==='approve'?'KYC aprobado':'KYC rechazado',d==='approve'?`La wallet de ${a?.name} quedó habilitada para pagos.`:`La wallet de ${a?.name} sigue sin habilitar para pagos.`)}
+    else if(d==='manualRev'){const tx=S.txs.find(x=>x.ref===t.ref);if(tx){const rv={id:'RV-'+rand(5),txId:tx.id,ref:tx.ref,amount:tx.amount,reason:'Reverso manual por soporte',status:'MANUAL',t:now()};S.reversals.unshift(rv);S.reversals.filter(r=>r.ref===tx.ref&&r.status==='FALLIDO').forEach(r=>r.status='MANUAL');provSet(S,tx,'REVERSADA');tx.reason='Reverso manual por soporte';step(S,tx,'REVERSADA','Reverso manual ejecutado por soporte');log(S,'POST','/v1/reversals',`${rv.id} manual · ${tx.ref}`)}t.resolution='Reverso manual ejecutado';toast('info','Reverso manual',`${t.ref} quedó reversada.`)}
+    else{t.resolution='Cerrado por analista sin acción adicional';toast('ok','Caso cerrado',t.id)}
+    t.status='RESUELTO';notify()}
+};
+
+document.addEventListener('click',e=>{
+  const qa=e.target.closest('a[data-qr]');if(qa){ui.w3.tab=qa.dataset.qr}
+  const pc=e.target.closest('a[data-paycp]');if(pc){ui.w2.cp=pc.dataset.paycp}
+  const sl=e.target.closest('a[data-sel]');if(sl){ui.hitl.sel=sl.dataset.sel;ui.hitl.filter='ABIERTO'}
+  const el=e.target.closest('[data-act]');if(!el)return;
+  const f=A[el.dataset.act];if(f){e.preventDefault();f(el,e)}
+});
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.dataset.fault){const k=t.dataset.fault;S.faults[k]=t.value/100;$('#fv-'+k).textContent=t.value+'%';notify();return}
+  const p=t.dataset.in;if(!p)return;
+  const v=t.type==='checkbox'?t.checked:t.value;
+  const parts=p.split('.');let o=ui;for(let i=0;i<parts.length-1;i++)o=o[parts[i]];o[parts.at(-1)]=v;
+  if(p.startsWith('onb.d.')){
+    const k=parts.at(-1),err=VALID[k](v),h=$('#h-'+k);
+    if(k==='terms')ui.onb.touched.terms=true;
+    const show=ui.onb.touched[k];
+    if(k!=='terms'){t.classList.toggle('err',!!(show&&err));t.classList.toggle('okk',!!(show&&!err));t.setAttribute('aria-invalid',!!(show&&err))}
+    if(h){h.textContent=show?(err||OKMSG[k]):(k==='pass'?'Mínimo 8 caracteres, una mayúscula y un número. Se guarda cifrada (hash).':'');h.className='hint '+(show?(err?'err':'okk'):'')}
+    if(k==='pass'){const ps=passScore(v);$$('#strength i').forEach((i,n)=>i.style.background=n<ps?['var(--bad)','var(--warn)','var(--brand-2)','var(--ok)'][ps-1]:'var(--line)')}
+  }
+  if(p.startsWith('w3.gen')){const cv=$('#qrCv');if(cv){drawQR(cv,qrPayload());const a=parseFloat(ui.w3.genAmount);$('#qrAmt').textContent=a>0?fmt(a):'Monto libre';$('#qrCon').textContent=ui.w3.genConcept;$('#qrPayload').textContent=qrPayload()}}
+  notify();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('#modal').hidden)closeModal();else $('#console').classList.remove('open')}});
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+$('#fab').addEventListener('click',()=>{$('#console').classList.add('open');notify()});
+$('#conClose').addEventListener('click',()=>$('#console').classList.remove('open'));
+$('#themeBtn').addEventListener('click',()=>{const dark=document.documentElement.dataset.theme==='dark'||(!document.documentElement.dataset.theme&&matchMedia('(prefers-color-scheme: dark)').matches);setTheme(dark?'light':'dark')});
+document.addEventListener('submit',e=>{const id=e.target.id;const h={loginForm:doLogin,regForm:doRegister,kycForm:runKyc,ctFormEl:addContact}[id];if(h){e.preventDefault();h()}});
+/* Un campo del registro se valida al salir de él */
+document.addEventListener('focusout',e=>{const p=e.target.dataset?.in;if(!p||!p.startsWith('onb.d.'))return;const k=p.split('.').at(-1);if(ui.onb.touched[k])return;ui.onb.touched[k]=true;e.target.dispatchEvent(new Event('input',{bubbles:true}))});
+$('#logoutBtn').innerHTML=ic('logout');
+$('#fabIc').innerHTML=ic('terminal');$('#conIc').innerHTML=ic('terminal');$('#conClose').innerHTML=ic('x');
+
+/* refresco de tiempos relativos y SLA */
+setInterval(()=>{$$('[data-region]').forEach(el=>{if(['recent','history','hitlList','idemStore'].includes(el.dataset.region))el._h=null});notify()},30000);
+
+/* arranque */
+(function boot(){
+  let t=null;try{t=localStorage.getItem('aliada-theme')}catch(e){}
+  setTheme(t);
+  const h=location.hash.slice(1);
+  go(h==='onboarding'?'onboarding':'ingresar',{instant:true});
+})();
+</script>
+
+</body>
+</html>

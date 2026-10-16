@@ -1,0 +1,139 @@
+@use '../../../styles/breakpoints' as bp;
+
+:host {
+  display: block;
+}
+
+.page-heading {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.page-heading h2 {
+  font-size: var(--font-size-page);
+}
+
+.page-heading > p:last-child {
+  max-width: 68ch;
+  color: var(--color-muted);
+}
+
+.contacts-alert,
+.contacts-success {
+  margin-bottom: var(--space-5);
+}
+
+.contacts-success {
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.contacts-grid {
+  display: grid;
+  grid-template-columns: minmax(var(--width-contact-column-min), 0.8fr) minmax(0, 1.2fr);
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.content-panel {
+  min-width: 0;
+  padding: var(--space-6);
+  border: var(--size-border) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.content-panel h3 {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-3xl);
+}
+
+.contact-form {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+}
+
+.contacts-list-panel {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.contacts-list-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.contacts-count {
+  display: grid;
+  min-width: var(--size-status-count);
+  min-height: var(--size-status-count);
+  place-items: center;
+  border-radius: var(--radius-pill);
+  background: var(--color-brand-soft);
+  color: var(--color-brand-strong);
+  font-weight: 700;
+}
+
+.contacts-empty,
+.status-line {
+  color: var(--color-muted);
+}
+
+.contacts-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.contact-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(var(--width-contact-value-min), 0.9fr);
+  gap: var(--space-4);
+  padding-block: var(--space-4);
+  border-top: var(--size-border) solid var(--color-border);
+}
+
+.contact-row h4 {
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+}
+
+.contact-row p {
+  margin-top: var(--space-2);
+  color: var(--color-muted);
+}
+
+.contact-row code {
+  align-self: center;
+  overflow-wrap: anywhere;
+  color: var(--color-brand);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+}
+
+@media (max-width: bp.$wide) {
+  .contacts-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: bp.$mobile) {
+  .content-panel {
+    padding: var(--space-5);
+  }
+
+  .page-heading h2 {
+    font-size: var(--font-size-5xl);
+  }
+
+  .contact-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2);
+  }
+}

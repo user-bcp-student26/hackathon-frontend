@@ -1,0 +1,25 @@
+<div class="auth-layout">
+  <aside class="auth-brand-panel" aria-label="Aliada Wallet">
+    <a class="brand-lockup" routerLink="/ingresar" aria-label="Aliada Wallet, inicio">
+      <span class="brand-symbol" aria-hidden="true"></span>
+      <span class="brand-wordmark">AL<span>ia</span>DA</span>
+      <span class="brand-subtitle">Tu billetera aliada</span>
+    </a>
+
+    <div class="auth-brand-panel__copy">
+      <p class="eyebrow">Tu billetera digital</p>
+      <h1>{{ headline() }}</h1>
+      <p>{{ description() }}</p>
+    </div>
+
+    <ul class="auth-benefits" aria-label="Pasos de tu cuenta">
+      @for (step of steps(); track step) {
+        <li><span class="auth-benefits__mark" aria-hidden="true"></span>{{ step }}</li>
+      }
+    </ul>
+  </aside>
+
+  <main class="auth-main">
+    <ng-content />
+  </main>
+</div>

@@ -1,0 +1,17 @@
+{
+  "servers": {
+    "github-hackathon-issues": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "X-MCP-Toolsets": "issues",
+        "X-MCP-Readonly": "true"
+      }
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    }
+  }
+}

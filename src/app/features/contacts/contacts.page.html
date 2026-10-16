@@ -1,0 +1,79 @@
+<section class="page-heading">
+  <p class="eyebrow">H-01 · Contactos</p>
+  <h2>Mis contactos</h2>
+  <p>Registra a las personas a quienes envías dinero con el wallet_id que te compartan.</p>
+</section>
+
+@if (unavailable) {
+  <section class="content-panel availability-panel" role="status" aria-live="polite">
+    <p class="eyebrow">Función no disponible</p>
+    <h3>Esta sección estará disponible más adelante</h3>
+    <p>El backend actual solo permite crear una cuenta e ingresar. Esta pantalla no lista ni registra contactos.</p>
+  </section>
+} @else {
+  @if (errorMessage()) {
+    <p class="form-alert contacts-alert" role="alert" aria-live="polite">{{ errorMessage() }}</p>
+  }
+  @if (successMessage()) {
+    <p class="contacts-success" role="status" aria-live="polite">{{ successMessage() }}</p>
+  }
+
+  <div class="contacts-grid">
+  <section class="content-panel" aria-labelledby="contact-form-title">
+    <p class="eyebrow">Nuevo contacto</p>
+    <h3 id="contact-form-title">Datos del contacto</h3>
+    <form class="contact-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="form-field">
+        <label for="contact-name">Nombre</label>
+        <input id="contact-name" class="form-control" type="text" formControlName="name" maxlength="120" autocomplete="name" aria-describedby="contact-name-error" />
+        <span class="field-error" id="contact-name-error">{{ fieldError(form.controls.name, 'el nombre') }}</span>
+      </div>
+      <div class="form-field">
+        <label for="contact-phone">Celular</label>
+        <input id="contact-phone" class="form-control" type="tel" formControlName="phone" inputmode="tel" maxlength="16" placeholder="+51987654321" aria-describedby="contact-phone-error" />
+        <span class="field-error" id="contact-phone-error">{{ fieldError(form.controls.phone, 'el celular') }}</span>
+      </div>
+      <div class="form-field">
+        <label for="contact-wallet">wallet_id</label>
+        <input id="contact-wallet" class="form-control" type="text" formControlName="wallet_id" maxlength="36" autocomplete="off" aria-describedby="contact-wallet-error" />
+        <span class="field-error" id="contact-wallet-error">{{ fieldError(form.controls.wallet_id, 'el wallet_id') }}</span>
+      </div>
+      <button class="button button--primary" type="submit" [disabled]="submitting()">
+        {{ submitting() ? 'Guardando…' : 'Registrar contacto' }}
+      </button>
+    </form>
+  </section>
+
+  <section class="content-panel contacts-list-panel" aria-labelledby="contacts-list-title">
+    <div class="contacts-list-heading">
+      <div>
+        <p class="eyebrow">Tu lista</p>
+        <h3 id="contacts-list-title">Contactos registrados</h3>
+      </div>
+      @if (!loading()) {
+        <span class="contacts-count">{{ contacts().length }}</span>
+      }
+    </div>
+
+    @if (loading()) {
+      <p class="status-line" role="status" aria-live="polite">Cargando contactos…</p>
+    } @else if (contacts().length === 0 && errorMessage()) {
+      <button class="button button--secondary" type="button" (click)="loadContacts()">Reintentar</button>
+    } @else if (contacts().length === 0) {
+      <p class="contacts-empty">Aún no tienes contactos. Registra el primero con su nombre, celular y wallet_id.</p>
+    } @else {
+      <ul class="contacts-list">
+        @for (contact of contacts(); track contact.id) {
+          <li class="contact-row">
+            <div>
+              <h4>{{ contact.name }}</h4>
+              <p>{{ contact.phone }}</p>
+            </div>
+            <code>{{ contact.wallet_id }}</code>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+  </div>
+}
