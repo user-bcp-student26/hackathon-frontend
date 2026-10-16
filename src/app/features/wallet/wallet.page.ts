@@ -1,13 +1,23 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { apiErrorMessage } from '../../core/api/api-error';
+import { AuthSessionService } from '../../core/auth/auth-session.service';
 import { Wallet } from './models/wallet.model';
 import { WalletService } from './wallet.service';
 
 type ResourceState = 'loading' | 'missing' | 'ready' | 'error';
+type MetricTone = 'blue' | 'green' | 'amber' | 'red';
+
+interface DashboardMetric {
+  label: string;
+  value: string;
+  detail: string;
+  tone: MetricTone;
+  bars: readonly number[];
+}
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -17,13 +27,23 @@ type ResourceState = 'loading' | 'missing' | 'ready' | 'error';
 })
 export class WalletPage implements OnInit {
   private readonly walletService = inject(WalletService);
+  private readonly authSession = inject(AuthSessionService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
+  readonly displayName = computed(
+    () => this.authSession.currentUser()?.name.split(/\s+/)[0] ?? 'Aliada',
+  );
   readonly wallet = signal<Wallet | null>(null);
   readonly walletState = signal<ResourceState>('loading');
   readonly loadingAction = signal(false);
   readonly errorMessage = signal('');
+  readonly dashboardMetrics: readonly DashboardMetric[] = [
+    { label: 'Operaciones 24 h', value: '3', detail: 'S/ 22.00 pagados', tone: 'blue', bars: [26, 42, 34, 60, 48, 74, 38] },
+    { label: 'Tasa de éxito', value: '75%', detail: '12 operaciones finalizadas', tone: 'green', bars: [48, 35, 58, 46, 72, 64, 82] },
+    { label: 'En tránsito', value: '1', detail: 'Pendiente de confirmación', tone: 'amber', bars: [76, 48, 62, 38, 56, 30, 46] },
+    { label: 'Diferencias', value: '4', detail: '2 casos abiertos en soporte', tone: 'red', bars: [28, 52, 42, 68, 54, 76, 84] },
+  ];
 
   ngOnInit(): void {
     this.loadWallet();

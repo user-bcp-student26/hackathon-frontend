@@ -1,7 +1,16 @@
-<section class="page-heading">
-  <p class="eyebrow">H-01 · Wallet</p>
-  <h2>Mi wallet</h2>
-  <p>Genera tu wallet y consulta su estado.</p>
+<section class="dashboard-intro">
+  <div>
+    <h2>Buenas tardes, {{ displayName() }}</h2>
+    <p>Este es el resumen de tu billetera.</p>
+  </div>
+  <div class="dashboard-intro__actions">
+    <button class="button button--secondary" type="button" disabled title="Soporte no disponible">
+      Soporte
+    </button>
+    <button class="button button--primary" type="button" disabled title="Pagos no disponibles">
+      Nuevo pago
+    </button>
+  </div>
 </section>
 
 @if (errorMessage()) {
@@ -30,26 +39,56 @@
     </button>
   </section>
 } @else if (wallet(); as currentWallet) {
-  <section class="content-panel wallet-summary" aria-labelledby="wallet-summary-title">
-    <div class="wallet-summary__heading">
-      <div>
-        <p class="eyebrow">Tu identificador</p>
-        <h3 id="wallet-summary-title" class="wallet-id">{{ currentWallet.wallet_id }}</h3>
+  <div class="wallet-dashboard">
+    <section class="balance-panel" aria-labelledby="balance-title">
+      <div class="balance-panel__topline">
+        <p class="eyebrow">Saldo disponible</p>
+        <span class="demo-badge">Datos de prueba</span>
       </div>
-      <span class="status-pill status-pill--active">Activa</span>
-    </div>
-    <p class="wallet-summary__help">Tu wallet está asociada a tu cuenta.</p>
+      <h3 id="balance-title">S/ 100.00</h3>
+      <div class="balance-panel__identity">
+        <code>{{ currentWallet.wallet_id }}</code>
+        <span>{{ displayName() }}</span>
+        @if (currentWallet.payments_enabled) {
+          <span class="payment-pill payment-pill--enabled">Pagos habilitados</span>
+        } @else {
+          <span class="payment-pill payment-pill--blocked">Pagos no habilitados</span>
+        }
+      </div>
+      <p class="balance-panel__disclaimer">Premio visual de activación; no representa saldo real.</p>
+      <div class="balance-panel__actions" aria-label="Acciones de pago no disponibles">
+        <button class="button button--accent" type="button" disabled title="Pagos no disponibles">
+          Pagar a contacto
+        </button>
+        <button class="button button--glass" type="button" disabled title="Pagos QR no disponibles">
+          Pagar con QR
+        </button>
+        <button class="button button--glass" type="button" disabled title="Cobros QR no disponibles">
+          Cobrar con QR
+        </button>
+      </div>
+      <span class="balance-panel__rings" aria-hidden="true"></span>
+    </section>
 
-    @if (currentWallet.payments_enabled) {
-      <div class="payment-state payment-state--enabled" role="status">
-        <h4>Pagos habilitados</h4>
-        <p>El backend indica que los pagos están habilitados.</p>
+    <section class="metrics-area" aria-labelledby="metrics-title">
+      <div class="metrics-area__heading">
+        <h3 id="metrics-title">Actividad de la billetera</h3>
+        <span>Métricas de prueba</span>
       </div>
-    } @else {
-      <div class="payment-state payment-state--blocked" role="status">
-        <h4>Pagos no habilitados</h4>
-        <p>La wallet está activa; el backend aún no habilita pagos.</p>
+      <div class="metrics-grid">
+        @for (metric of dashboardMetrics; track metric.label) {
+          <article class="metric-tile" [class.metric-tile--blue]="metric.tone === 'blue'" [class.metric-tile--green]="metric.tone === 'green'" [class.metric-tile--amber]="metric.tone === 'amber'" [class.metric-tile--red]="metric.tone === 'red'">
+            <p class="metric-tile__label">{{ metric.label }}</p>
+            <strong>{{ metric.value }}</strong>
+            <p class="metric-tile__detail">{{ metric.detail }}</p>
+            <div class="metric-spark" aria-hidden="true">
+              @for (bar of metric.bars; track $index) {
+                <span [style.height.%]="bar"></span>
+              }
+            </div>
+          </article>
+        }
       </div>
-    }
-  </section>
+    </section>
+  </div>
 }

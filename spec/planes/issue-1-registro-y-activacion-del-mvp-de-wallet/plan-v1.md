@@ -83,7 +83,7 @@
 
 - **Conexión:** `environment.development.ts` usa la URL temporal ngrok y `useMocks = false`; producción mantiene `apiBaseUrl = ''`. El interceptor añade `ngrok-skip-browser-warning: true` en desarrollo; Quarkus permite esa cabecera por CORS. Rutas activas: `/users`, `/auth/login`, `/wallet`.
 - **Rutas:** `/ingresar`, `/registro`, `/wallet` y `/contactos`; el workspace está protegido por guard. Registro es público; login y wallet usan Basic Auth.
-- **Componentes:** ingreso/registro funcionales; wallet permite consultar estado, generar tras 404 o desde el estado de error, y mostrar `wallet_id`/`payments_enabled`. Contactos y KYC continúan informativos.
+- **Componentes:** ingreso/registro funcionales; wallet permite consultar estado, generar tras 404 o desde el estado de error, y mostrar `wallet_id`/`payments_enabled`. Si `status` es `active`, presenta el premio visual S/ 100.00 y el dashboard de referencia. Operaciones 24 h (3), tasa (75%), tránsito (1) y diferencias (4) son métricas de prueba, identificadas como tales. No provienen del backend ni se persisten; contactos y KYC continúan informativos.
 - **Servicios/estado:** sesión Basic Auth conserva email/password solo en memoria. WalletService ofrece GET y POST; no se invocan servicios de KYC ni contactos.
 - **HTTP/modelos:** el interceptor añade Basic Auth solo a endpoints protegidos y el header de bypass ngrok en todas las solicitudes de desarrollo. `wallet_id` usa `wallet_<16 hex>` por decisión del usuario, en divergencia con el UUID v4 indicado en ADR-001.
 - **Dirección visual:** tomar como base el prototipo ALiaDA: fondo `#F2F4F9`, superficies blancas, navy `#0E2A66`/rail `#0A1B40`, acento naranja `#FF6A2B`; Bricolage Grotesque para display, Figtree para cuerpo y JetBrains Mono para IDs. Panel de marca oscuro junto al formulario en escritorio; flujo apilado en móvil; tokens SCSS, foco visible, etiquetas asociadas, errores anunciados y movimiento reducido.
@@ -147,6 +147,7 @@ No usar datos personales reales. Las validaciones de integración, si se autoriz
 | 2026-10-16 | Confirmar que el backend actual solo tiene dos endpoints: crear cuenta e ingresar; `GET /wallet` no existe. |
 | 2026-10-16 | Aprobar mantener wallet y contactos visibles pero informativos; no invocar endpoints wallet/contactos/KYC hasta que estén disponibles. Esta decisión supersede la integración prevista anteriormente para esas pantallas. |
 | 2026-10-16 | Aprobar `ngrok-skip-browser-warning: true` en solicitudes dev y permitirlo en CORS de Quarkus; Basic Auth no cambia. |
+| 2026-10-16 | Mostrar S/ 100.00 como premio visual al activar la wallet; no representa saldo real ni se guarda en backend porque el contrato no contiene saldo. |
 
 ## 13. Bitácora de ejecución
 
@@ -181,6 +182,7 @@ No usar datos personales reales. Las validaciones de integración, si se autoriz
 | 2026-10-16 | Diagnóstico interstitial/CORS ngrok | GET sin bypass devolvió la pantalla `ERR_NGROK_6024`. Con `ngrok-skip-browser-warning: true`, GET `/wallet` sin credenciales llegó a Quarkus y devolvió 401 JSON con `Access-Control-Allow-Origin: http://localhost:4200`. |
 | 2026-10-16 | Preflight ngrok | OPTIONS `/wallet` desde `localhost:4200` con `authorization,ngrok-skip-browser-warning`: HTTP 200; `Access-Control-Allow-Headers` incluye `Content-Type,Authorization,ngrok-skip-browser-warning`. |
 | 2026-10-16 | Implementación bypass dev | Angular añade el header ngrok en requests del interceptor; `application.properties` permite el header en CORS. Build y lint en verde; no se enviaron credenciales ni POST. |
+| 2026-10-16 | Dashboard wallet | Vista adaptada a la referencia con premio S/ 100 y métricas de prueba; el wallet_id/estado vienen del GET. Build completa con advertencia de presupuesto SCSS (5.67 kB, aviso 4 kB, error 8 kB); lint pasa. La API no se autenticó. |
 
 ## 14. Desviaciones del plan
 | Fecha | Desviación | Motivo | Aprobada |
@@ -188,6 +190,7 @@ No usar datos personales reales. Las validaciones de integración, si se autoriz
 | 2026-10-16 | Separar URL temporal por entorno y bloquear API si producción no tiene host | Evitar que el build de producción envíe datos a la base pública temporal | Sí; usuario eligió la opción “Solo desarrollo; producción sin host” |
 | 2026-10-16 | Mantener wallet/contactos como páginas informativas sin requests; no integrar KYC | El backend solo implementa registro e ingreso | Sí; mini-plan aprobado por el usuario |
 | 2026-10-16 | Añadir header bypass ngrok solo al flujo de desarrollo y permitirlo en CORS | Ngrok interponía un interstitial sin cabecera CORS | Sí; usuario aprobó cambio frontend/backend |
+| 2026-10-16 | Añadir premio visual fijo de S/ 100.00 para wallet activa | Solicitud del usuario; API Wallet no define ni persiste balance | Sí; usuario aprobó tarjeta frontend-only |
 
 ## 15. Hallazgos secundarios (fuera de alcance)
 
@@ -201,7 +204,7 @@ No usar datos personales reales. Las validaciones de integración, si se autoriz
 | CA | Implementado en | Prueba | Estado |
 |---|---|---|---|
 | CA-01 | `RegistrationPage` y `UserService` | Pendiente de Frontend Tester | Implementado — pendiente de pruebas |
-| CA-02 | `WalletPage` y `WalletService` (`GET/POST /wallet`) | Pendiente de Frontend Tester y respuesta autenticada del backend | Implementado — pendiente de pruebas |
+| CA-02 | `WalletPage` y `WalletService` (`GET/POST /wallet`); premio S/ 100.00 solo visual | Pendiente de Frontend Tester y respuesta autenticada del backend | Implementado — pendiente de pruebas; premio no persistido |
 | CA-03 | No implementado; endpoints de contactos ausentes | No aplica hasta que existan endpoints | Pendiente de backend real |
 | CA-04 | `LoginPage`, `AuthSessionService` y `apiInterceptor` | Pendiente de Frontend Tester | Implementado con desviación Basic Auth aprobada — pendiente de pruebas |
 | CA-05 | No implementado; endpoint KYC ausente | No aplica hasta que exista endpoint | Pendiente de backend real |
