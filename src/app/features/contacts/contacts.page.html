@@ -4,21 +4,14 @@
   <p>Registra a las personas a quienes envías dinero con el wallet_id que te compartan.</p>
 </section>
 
-@if (unavailable) {
-  <section class="content-panel availability-panel" role="status" aria-live="polite">
-    <p class="eyebrow">Función no disponible</p>
-    <h3>Esta sección estará disponible más adelante</h3>
-    <p>El backend actual solo permite crear una cuenta e ingresar. Esta pantalla no lista ni registra contactos.</p>
-  </section>
-} @else {
-  @if (errorMessage()) {
-    <p class="form-alert contacts-alert" role="alert" aria-live="polite">{{ errorMessage() }}</p>
-  }
-  @if (successMessage()) {
-    <p class="contacts-success" role="status" aria-live="polite">{{ successMessage() }}</p>
-  }
+@if (errorMessage()) {
+  <p class="form-alert contacts-alert" role="alert" aria-live="polite">{{ errorMessage() }}</p>
+}
+@if (successMessage()) {
+  <p class="contacts-success" role="status" aria-live="polite">{{ successMessage() }}</p>
+}
 
-  <div class="contacts-grid">
+<div class="contacts-grid">
   <section class="content-panel" aria-labelledby="contact-form-title">
     <p class="eyebrow">Nuevo contacto</p>
     <h3 id="contact-form-title">Datos del contacto</h3>
@@ -35,7 +28,7 @@
       </div>
       <div class="form-field">
         <label for="contact-wallet">wallet_id</label>
-        <input id="contact-wallet" class="form-control" type="text" formControlName="wallet_id" maxlength="36" autocomplete="off" aria-describedby="contact-wallet-error" />
+        <input id="contact-wallet" class="form-control" type="text" formControlName="wallet_id" maxlength="23" autocomplete="off" aria-describedby="contact-wallet-error" />
         <span class="field-error" id="contact-wallet-error">{{ fieldError(form.controls.wallet_id, 'el wallet_id') }}</span>
       </div>
       <button class="button button--primary" type="submit" [disabled]="submitting()">
@@ -75,5 +68,4 @@
       </ul>
     }
   </section>
-  </div>
-}
+</div>
