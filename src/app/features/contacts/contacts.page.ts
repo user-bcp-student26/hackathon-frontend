@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -16,14 +16,13 @@ import { WALLET_ID_PATTERN } from '../wallet/models/wallet.model';
   templateUrl: './contacts.page.html',
   styleUrl: './contacts.page.scss',
 })
-export class ContactsPage {
+export class ContactsPage implements OnInit {
   private readonly formBuilder = inject(FormBuilder).nonNullable;
   private readonly contactsService = inject(ContactsService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly contacts = signal<Contact[]>([]);
-  readonly unavailable = true;
   readonly loading = signal(true);
   readonly submitting = signal(false);
   readonly submitted = signal(false);
@@ -32,8 +31,12 @@ export class ContactsPage {
   readonly form = this.formBuilder.group({
     name: ['', [Validators.required, Validators.maxLength(120)]],
     phone: ['', [Validators.required, Validators.pattern(/^\+?[0-9]{9,15}$/)]],
-    wallet_id: ['', [Validators.required, Validators.pattern(WALLET_ID_PATTERN)]],
+    wallet_id: ['', [Validators.required, Validators.maxLength(23), Validators.pattern(WALLET_ID_PATTERN)]],
   });
+
+  ngOnInit(): void {
+    this.loadContacts();
+  }
 
   loadContacts(): void {
     this.loading.set(true);
@@ -63,7 +66,7 @@ export class ContactsPage {
       return 'Usa de 9 a 15 dígitos; el prefijo + es opcional.';
     }
     if (control.hasError('pattern')) {
-      return 'Ingresa un wallet_id con formato UUID.';
+      return 'Usa wallet_ seguido de 16 caracteres hexadecimales.';
     }
     if (control.hasError('maxlength')) {
       return `${label} supera la longitud permitida.`;
